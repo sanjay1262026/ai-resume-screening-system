@@ -1,0 +1,21 @@
+
+Job Title: Full Stack Web Developer
+Department: Engineering
+Location: Hybrid / New York, NY
+Experience Required: 2+ Years
+Education: Bachelor's degree in Computer Science, Software Engineering, or equivalent experience
+
+Job Overview:
+We are looking for a talented Full Stack Web Developer to design and implement robust, scalable web applications. You will work across the entire stack, from modern frontend interfaces to backend microservices.
+
+Key Responsibilities:
+- Develop responsive, user-friendly frontend web interfaces using React, JavaScript, HTML5, and CSS3.
+- Build performant RESTful APIs and backend services using Python, Node.js, and Express.
+- Manage relational and NoSQL databases including PostgreSQL, MySQL, and MongoDB.
+- Write unit tests and maintain continuous integration and deployment pipelines.
+- Optimize web applications for maximum speed and scalability.
+
+Required Skills & Qualifications:
+- Technical Skills: Python, React, JavaScript, Node.js, Express, HTML5, CSS3, PostgreSQL, MongoDB, REST API, Git, Docker, TypeScript.
+- Experience: 2+ years of full stack web development experience.
+- Soft Skills: Agile methodology, Collaboration, Code review, Problem solving.

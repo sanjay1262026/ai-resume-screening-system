@@ -1,0 +1,20 @@
+
+Job Title: Data Analyst & Business Intelligence Specialist
+Department: Data Analytics
+Location: Remote
+Experience Required: 1+ Years
+Education: Bachelor's degree in Statistics, Computer Science, Economics, or Data Analytics
+
+Job Overview:
+We are hiring a Data Analyst to transform complex data into actionable insights for business decision-making. You will create interactive dashboards, write SQL queries, and perform statistical data analysis.
+
+Key Responsibilities:
+- Query and analyze large datasets using SQL and Python (Pandas, NumPy).
+- Create interactive dashboards and visual reports using Tableau or PowerBI.
+- Conduct statistical analysis and data cleaning to identify trends and metrics.
+- Present findings to leadership and stakeholders in clear, actionable visual reports.
+
+Required Skills & Qualifications:
+- Technical Skills: SQL, Python, Pandas, NumPy, Tableau, Power BI, Excel, Data Visualization, Statistics, Data Cleaning, ETL.
+- Experience: 1+ years in data analysis, reporting, or business intelligence.
+- Soft Skills: Data storytelling, Presentation skills, Attention to detail.

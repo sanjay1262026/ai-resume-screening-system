@@ -1,0 +1,23 @@
+
+Job Title: Senior AI / Machine Learning Engineer
+Department: Artificial Intelligence & Data Science
+Location: Remote / San Francisco, CA
+Experience Required: 3+ Years
+Education: Bachelor's or Master's in Computer Science, AI, Data Science, or related field
+
+Job Overview:
+We are seeking an experienced AI/ML Engineer to build state-of-the-art NLP and machine learning models. You will be responsible for end-to-end model development, deployment, and optimization.
+
+Key Responsibilities:
+- Design, train, and deploy machine learning models using Python, PyTorch, or TensorFlow.
+- Process large unstructured text datasets using Natural Language Processing (NLP) techniques.
+- Build RESTful APIs using FastAPI or Flask to serve AI models in production.
+- Containerize applications using Docker and deploy on AWS or Cloud infrastructure.
+- Implement CI/CD pipelines and monitor model performance in production.
+- Collaborate with cross-functional teams to integrate AI capabilities into product features.
+
+Required Skills & Qualifications:
+- Technical Skills: Python, Machine Learning, Deep Learning, PyTorch, TensorFlow, NLP, Scikit-Learn, Pandas, NumPy, SQL, Docker, FastAPI, AWS, Git.
+- Experience: Minimum 3 years of hands-on experience in AI/ML software development.
+- Education: B.Tech / B.S. or M.Tech / M.S. in Computer Science or Data Science.
+- Soft Skills: Problem solving, Communication, Teamwork, Analytical thinking.

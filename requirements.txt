@@ -1,0 +1,11 @@
+streamlit>=1.30.0
+scikit-learn>=1.2.0
+pandas>=2.0.0
+numpy>=1.24.0
+plotly>=5.15.0
+pypdf>=3.15.0
+pdfminer.six>=20221105
+python-docx>=1.0.0
+fpdf2>=2.7.0
+spacy>=3.5.0
+nltk>=3.8.0
