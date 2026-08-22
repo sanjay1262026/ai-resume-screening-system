@@ -6,7 +6,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Robust dual imports (works whether extracted in subfolders or flat)
+# Smart imports (Works whether files are in root or subfolders!)
 try:
     from modules.parser import parse_resume_file
     from modules.skills import extract_skills_from_text, parse_job_requirements
@@ -37,7 +37,11 @@ except ImportError:
         render_skill_tags
     )
 
-from zip_project import create_zip_archive
+try:
+    from zip_project import create_zip_archive
+except ImportError:
+    def create_zip_archive():
+        pass
 
 # 1. Page Configuration & Theme
 st.set_page_config(
@@ -89,7 +93,6 @@ def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
 
     results = []
     resume_files = glob.glob("sample_data/resumes/*") + glob.glob("resumes/*")
-    # Filter unique files
     unique_paths = list(set(resume_files))
     for filepath in unique_paths:
         if os.path.isfile(filepath):
@@ -189,7 +192,6 @@ with tab1:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.subheader("1. Job Description (JD)")
         
-        # Preset selector
         preset_jd = st.selectbox(
             "Select Pre-built Job Template:",
             ["Custom Input", "Senior AI / ML Engineer", "Full Stack Web Developer", "Data Analyst"]
@@ -222,7 +224,6 @@ with tab1:
         )
         st.session_state.jd_text = jd_input
 
-        # Extracted Requirements summary card
         if jd_input.strip():
             reqs = parse_job_requirements(jd_input)
             st.markdown("---")
@@ -253,14 +254,11 @@ with tab1:
                 st.error("Please provide or select a Job Description first!")
             else:
                 candidates_list = []
-                
-                # Process uploaded files
                 if uploaded_files:
                     for uf in uploaded_files:
                         cand_data = parse_resume_file(uf)
                         candidates_list.append(cand_data)
 
-                # Process sample files if checked
                 if use_sample_resumes or not uploaded_files:
                     sample_paths = glob.glob("sample_data/resumes/*") + glob.glob("resumes/*")
                     for sp in set(sample_paths):
@@ -268,7 +266,6 @@ with tab1:
                             cand_data = parse_resume_file(sp)
                             candidates_list.append(cand_data)
 
-                # Evaluate candidates
                 eval_results = []
                 for cand in candidates_list:
                     res = evaluate_candidate(cand, st.session_state.jd_text, weights=weights)
@@ -285,7 +282,6 @@ with tab1:
 if st.session_state.eval_results and st.session_state.jd_text:
     updated_results = []
     for res in st.session_state.eval_results:
-        # Re-evaluate with current slider weights
         cand_dict = {
             "candidate_name": res["candidate_name"],
             "filename": res["filename"],
@@ -301,7 +297,6 @@ if st.session_state.eval_results and st.session_state.jd_text:
     updated_results.sort(key=lambda x: x["overall_score"], reverse=True)
     st.session_state.eval_results = updated_results
 
-# Filtered results for displays
 filtered_results = [
     r for r in st.session_state.eval_results
     if r["overall_score"] >= min_score_filter and r["status"] in status_filter
@@ -314,7 +309,6 @@ with tab2:
     if not filtered_results:
         st.warning("No candidate resumes match the active filters or state.")
     else:
-        # Metrics
         total_cands = len(st.session_state.eval_results)
         top_matches = sum(1 for r in st.session_state.eval_results if r["overall_score"] >= 75)
         avg_score = sum(r["overall_score"] for r in st.session_state.eval_results) / max(total_cands, 1)
@@ -325,7 +319,6 @@ with tab2:
         st.markdown("<br>", unsafe_allow_html=True)
 
         st.subheader("🏆 Candidate Screening Leaderboard")
-        
         search_query = st.text_input("🔍 Search Candidates by Name, Email, or Skill:", placeholder="Type 'Python', 'Alex', or 'PyTorch'...")
 
         display_list = filtered_results
@@ -336,7 +329,6 @@ with tab2:
                 if sq in r["candidate_name"].lower() or sq in r["email"].lower() or any(sq in s.lower() for s in r["matched_skills"])
             ]
 
-        # Leaderboard Table Data
         table_rows = []
         for rank, res in enumerate(display_list, 1):
             table_rows.append({
@@ -396,7 +388,6 @@ with tab3:
         st.info("At least 2 evaluated candidates are required for side-by-side comparison.")
     else:
         st.subheader("⚔️ Side-by-Side Candidate Head-to-Head Comparison")
-        
         cand_names = [r["candidate_name"] for r in st.session_state.eval_results]
         
         col_select1, col_select2 = st.columns(2)
@@ -425,7 +416,6 @@ with tab3:
 
         st.markdown("---")
         st.subheader("🤖 Automated AI Feedback & Technical Interview Generator")
-
         col_fb1, col_fb2 = st.columns(2)
 
         for col, res in zip([col_fb1, col_fb2], [res1, res2]):
@@ -457,7 +447,6 @@ with tab4:
         st.warning("No evaluation data available.")
     else:
         st.subheader("📊 Candidate Pool Skill Analytics")
-
         col_a1, col_a2 = st.columns(2)
 
         with col_a1:
@@ -535,7 +524,6 @@ with tab4:
 with tab5:
     st.subheader("📑 Export Candidate Screening Reports")
     st.write("Generate official candidate screening reports for HR records or hiring committee reviews.")
-
     col_exp1, col_exp2, col_exp3 = st.columns(3)
 
     with col_exp1:
