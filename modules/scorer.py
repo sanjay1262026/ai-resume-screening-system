@@ -2,7 +2,11 @@ import re
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from modules.skills import extract_skills_from_text, parse_job_requirements
+
+try:
+    from modules.skills import extract_skills_from_text, parse_job_requirements
+except ImportError:
+    from skills import extract_skills_from_text, parse_job_requirements
 
 def clean_text_for_nlp(text):
     """Clean text by removing special chars and standardizing whitespace."""

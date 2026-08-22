@@ -6,18 +6,37 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-from modules.parser import parse_resume_file
-from modules.skills import extract_skills_from_text, parse_job_requirements
-from modules.scorer import evaluate_candidate
-from modules.feedback import generate_candidate_feedback
-from modules.reporter import generate_csv_report, generate_pdf_report
-from components.ui import (
-    render_hero_banner,
-    render_metric_cards,
-    plot_candidate_radar,
-    plot_comparison_radar,
-    render_skill_tags
-)
+# Robust dual imports (works whether extracted in subfolders or flat)
+try:
+    from modules.parser import parse_resume_file
+    from modules.skills import extract_skills_from_text, parse_job_requirements
+    from modules.scorer import evaluate_candidate
+    from modules.feedback import generate_candidate_feedback
+    from modules.reporter import generate_csv_report, generate_pdf_report
+except ImportError:
+    from parser import parse_resume_file
+    from skills import extract_skills_from_text, parse_job_requirements
+    from scorer import evaluate_candidate
+    from feedback import generate_candidate_feedback
+    from reporter import generate_csv_report, generate_pdf_report
+
+try:
+    from components.ui import (
+        render_hero_banner,
+        render_metric_cards,
+        plot_candidate_radar,
+        plot_comparison_radar,
+        render_skill_tags
+    )
+except ImportError:
+    from ui import (
+        render_hero_banner,
+        render_metric_cards,
+        plot_candidate_radar,
+        plot_comparison_radar,
+        render_skill_tags
+    )
+
 from zip_project import create_zip_archive
 
 # 1. Page Configuration & Theme
@@ -28,9 +47,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Helper to find file across multiple potential folder layouts
+def resolve_path(*relative_paths):
+    for p in relative_paths:
+        if os.path.exists(p):
+            return p
+    return relative_paths[0]
+
 # Load Custom CSS
 def load_css():
-    css_path = "assets/style.css"
+    css_path = resolve_path("assets/style.css", "style.css", "style")
     if os.path.exists(css_path):
         with open(css_path, "r", encoding="utf-8") as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -51,18 +77,25 @@ if "jd_title" not in st.session_state:
 
 # Pre-loaded sample loader helper
 def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
-    jd_path = os.path.join("sample_data/job_descriptions", jd_filename)
+    jd_path = resolve_path(
+        os.path.join("sample_data/job_descriptions", jd_filename),
+        os.path.join("job_descriptions", jd_filename),
+        jd_filename
+    )
     if os.path.exists(jd_path):
         with open(jd_path, "r", encoding="utf-8") as f:
             st.session_state.jd_text = f.read()
             st.session_state.jd_title = jd_filename.replace("_JD.txt", "").replace("_", " ")
 
     results = []
-    resume_files = glob.glob("sample_data/resumes/*")
-    for filepath in resume_files:
-        cand_data = parse_resume_file(filepath)
-        eval_res = evaluate_candidate(cand_data, st.session_state.jd_text)
-        results.append(eval_res)
+    resume_files = glob.glob("sample_data/resumes/*") + glob.glob("resumes/*")
+    # Filter unique files
+    unique_paths = list(set(resume_files))
+    for filepath in unique_paths:
+        if os.path.isfile(filepath):
+            cand_data = parse_resume_file(filepath)
+            eval_res = evaluate_candidate(cand_data, st.session_state.jd_text)
+            results.append(eval_res)
 
     results.sort(key=lambda x: x["overall_score"], reverse=True)
     st.session_state.eval_results = results
@@ -80,7 +113,7 @@ with st.sidebar:
     st.subheader("⚡ Quick Demo Loader")
     if st.button("🔥 Load Pre-built Showcase Data", use_container_width=True):
         load_sample_data()
-        st.success("Loaded 6 pre-built resumes & JD!")
+        st.success("Loaded pre-built resumes & JD!")
         st.rerun()
 
     st.markdown("---")
@@ -163,17 +196,23 @@ with tab1:
         )
 
         if preset_jd == "Senior AI / ML Engineer":
-            with open("sample_data/job_descriptions/AI_ML_Engineer_JD.txt", "r") as f:
-                st.session_state.jd_text = f.read()
-                st.session_state.jd_title = "Senior AI / Machine Learning Engineer"
+            p = resolve_path("sample_data/job_descriptions/AI_ML_Engineer_JD.txt", "job_descriptions/AI_ML_Engineer_JD.txt")
+            if os.path.exists(p):
+                with open(p, "r") as f:
+                    st.session_state.jd_text = f.read()
+                    st.session_state.jd_title = "Senior AI / Machine Learning Engineer"
         elif preset_jd == "Full Stack Web Developer":
-            with open("sample_data/job_descriptions/Full_Stack_Developer_JD.txt", "r") as f:
-                st.session_state.jd_text = f.read()
-                st.session_state.jd_title = "Full Stack Web Developer"
+            p = resolve_path("sample_data/job_descriptions/Full_Stack_Developer_JD.txt", "job_descriptions/Full_Stack_Developer_JD.txt")
+            if os.path.exists(p):
+                with open(p, "r") as f:
+                    st.session_state.jd_text = f.read()
+                    st.session_state.jd_title = "Full Stack Web Developer"
         elif preset_jd == "Data Analyst":
-            with open("sample_data/job_descriptions/Data_Analyst_JD.txt", "r") as f:
-                st.session_state.jd_text = f.read()
-                st.session_state.jd_title = "Data Analyst Specialist"
+            p = resolve_path("sample_data/job_descriptions/Data_Analyst_JD.txt", "job_descriptions/Data_Analyst_JD.txt")
+            if os.path.exists(p):
+                with open(p, "r") as f:
+                    st.session_state.jd_text = f.read()
+                    st.session_state.jd_title = "Data Analyst Specialist"
 
         jd_input = st.text_area(
             "Target Job Description Text:",
@@ -204,7 +243,7 @@ with tab1:
             accept_multiple_files=True
         )
 
-        use_sample_resumes = st.checkbox("Include 6 Pre-loaded Industry Sample Resumes", value=True)
+        use_sample_resumes = st.checkbox("Include Pre-loaded Industry Sample Resumes", value=True)
 
         st.markdown("---")
         run_screening = st.button("🚀 Run AI Screening & Candidate Ranking Engine", use_container_width=True, type="primary")
@@ -223,10 +262,11 @@ with tab1:
 
                 # Process sample files if checked
                 if use_sample_resumes or not uploaded_files:
-                    sample_paths = glob.glob("sample_data/resumes/*")
-                    for sp in sample_paths:
-                        cand_data = parse_resume_file(sp)
-                        candidates_list.append(cand_data)
+                    sample_paths = glob.glob("sample_data/resumes/*") + glob.glob("resumes/*")
+                    for sp in set(sample_paths):
+                        if os.path.isfile(sp):
+                            cand_data = parse_resume_file(sp)
+                            candidates_list.append(cand_data)
 
                 # Evaluate candidates
                 eval_results = []
