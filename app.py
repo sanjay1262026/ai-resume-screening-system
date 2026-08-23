@@ -45,7 +45,7 @@ except ImportError:
 
 # 1. Page Configuration & Theme
 st.set_page_config(
-    page_title="AI Resume Screening & Candidate Ranking System",
+    page_title="AI Resume Screening System",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -148,26 +148,6 @@ with st.sidebar:
         ["Top Match 🟢", "Potential Fit 🟡", "Low Match 🔴"],
         default=["Top Match 🟢", "Potential Fit 🟡", "Low Match 🔴"]
     )
-
-    st.markdown("---")
-    st.subheader("📦 Submission Artifacts")
-    if os.path.exists("ai_resume_screening_system.zip"):
-        with open("ai_resume_screening_system.zip", "rb") as zf:
-            st.download_button(
-                label="🎁 Download Complete ZIP Codebase",
-                data=zf,
-                file_name="ai_resume_screening_system.zip",
-                mime="application/zip",
-                use_container_width=True
-            )
-
-    st.markdown("""
-        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin-top: 15px; font-size: 0.8rem; color: #94A3B8;">
-            <b>Project:</b> AI Resume Screening System<br/>
-            <b>Stack:</b> Python, Streamlit, NLP, Scikit-Learn, Plotly, PyPDF, DOCX<br/>
-            <b>Status:</b> Internship Final Project
-        </div>
-    """, unsafe_allow_html=True)
 
 # 4. Main App Layout & Header
 render_hero_banner()
@@ -524,7 +504,7 @@ with tab4:
 with tab5:
     st.subheader("📑 Export Candidate Screening Reports")
     st.write("Generate official candidate screening reports for HR records or hiring committee reviews.")
-    col_exp1, col_exp2, col_exp3 = st.columns(3)
+    col_exp1, col_exp2 = st.columns(2)
 
     with col_exp1:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
@@ -552,21 +532,6 @@ with tab5:
             mime="application/pdf",
             use_container_width=True
         )
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with col_exp3:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("### 📦 Project Source Code ZIP")
-        st.write("Download the entire project source code, documentation, modules, and dependencies for deployment.")
-        if os.path.exists("ai_resume_screening_system.zip"):
-            with open("ai_resume_screening_system.zip", "rb") as zf:
-                st.download_button(
-                    label="🎁 Download Codebase ZIP",
-                    data=zf,
-                    file_name="ai_resume_screening_system.zip",
-                    mime="application/zip",
-                    use_container_width=True
-                )
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================
