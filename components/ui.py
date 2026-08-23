@@ -6,9 +6,9 @@ def render_hero_banner():
     st.markdown("""
         <div class="hero-banner">
             <div>
-                <span class="badge-pill badge-primary">🚀 AI-POWERED HR TECH</span>
-                <span class="badge-pill badge-success">✨ PRECISION MATCHING</span>
-                <span class="badge-pill badge-warning">⚡ INSTANT RANKING</span>
+                <span class="badge-pill badge-primary">ENTERPRISE TALENT INTELLIGENCE</span>
+                <span class="badge-pill badge-success">PRECISION MATCHING</span>
+                <span class="badge-pill badge-warning">REAL-TIME RANKING</span>
             </div>
             <div class="hero-title">AI Resume Screening & Decision Support System</div>
             <div class="hero-subtitle">
@@ -22,35 +22,35 @@ def render_metric_cards(total, top_matches, avg_score, best_candidate, best_scor
     c1, c2, c3, c4 = st.columns(4)
     with c1:
         st.markdown(f"""
-            <div class="metric-box">
+            <div class="metric-box-inner metric-card-1">
                 <div class="metric-val">{total}</div>
                 <div class="metric-lbl">Total Resumes</div>
             </div>
         """, unsafe_allow_html=True)
     with c2:
         st.markdown(f"""
-            <div class="metric-box">
-                <div class="metric-val" style="color: #34D399;">{top_matches}</div>
+            <div class="metric-box-inner metric-card-2">
+                <div class="metric-val">{top_matches}</div>
                 <div class="metric-lbl">Top Matches (≥75%)</div>
             </div>
         """, unsafe_allow_html=True)
     with c3:
         st.markdown(f"""
-            <div class="metric-box">
-                <div class="metric-val" style="color: #818CF8;">{avg_score:.1f}%</div>
+            <div class="metric-box-inner metric-card-3">
+                <div class="metric-val">{avg_score:.1f}%</div>
                 <div class="metric-lbl">Average Fit Score</div>
             </div>
         """, unsafe_allow_html=True)
     with c4:
         st.markdown(f"""
-            <div class="metric-box">
-                <div class="metric-val" style="color: #FBBF24;">{best_score:.1f}%</div>
+            <div class="metric-box-inner metric-card-4">
+                <div class="metric-val">{best_score:.1f}%</div>
                 <div class="metric-lbl">Top Fit ({best_candidate[:12]})</div>
             </div>
         """, unsafe_allow_html=True)
 
 def plot_candidate_radar(candidate_res):
-    """Generates a Radar Chart for candidate breakdown scores."""
+    """Generates a clean Radar Chart for candidate breakdown scores."""
     categories = ['Skill Match', 'Semantic Similarity', 'Experience Match', 'Education Match']
     values = [
         candidate_res['skill_score'],
@@ -64,8 +64,8 @@ def plot_candidate_radar(candidate_res):
         r=values + [values[0]],
         theta=categories + [categories[0]],
         fill='toself',
-        fillcolor='rgba(99, 102, 241, 0.3)',
-        line=dict(color='#818CF8', width=2),
+        fillcolor='rgba(37, 99, 235, 0.25)',
+        line=dict(color='#2563EB', width=2.5),
         name=candidate_res['candidate_name']
     ))
 
@@ -74,14 +74,14 @@ def plot_candidate_radar(candidate_res):
             radialaxis=dict(
                 visible=True,
                 range=[0, 100],
-                color='#94A3B8',
-                gridcolor='rgba(255, 255, 255, 0.1)'
+                color='#475569',
+                gridcolor='#E2E8F0'
             ),
             angularaxis=dict(
-                color='#F1F5F9',
-                gridcolor='rgba(255, 255, 255, 0.1)'
+                color='#0F172A',
+                gridcolor='#E2E8F0'
             ),
-            bgcolor='rgba(15, 23, 42, 0.6)'
+            bgcolor='#FFFFFF'
         ),
         paper_bgcolor='rgba(0, 0, 0, 0)',
         plot_bgcolor='rgba(0, 0, 0, 0)',
@@ -103,8 +103,8 @@ def plot_comparison_radar(res1, res2):
         r=val1 + [val1[0]],
         theta=categories + [categories[0]],
         fill='toself',
-        fillcolor='rgba(52, 211, 153, 0.25)',
-        line=dict(color='#34D399', width=2),
+        fillcolor='rgba(16, 185, 129, 0.25)',
+        line=dict(color='#10B981', width=2.5),
         name=res1['candidate_name']
     ))
 
@@ -112,20 +112,20 @@ def plot_comparison_radar(res1, res2):
         r=val2 + [val2[0]],
         theta=categories + [categories[0]],
         fill='toself',
-        fillcolor='rgba(244, 63, 94, 0.25)',
-        line=dict(color='#F43F5E', width=2),
+        fillcolor='rgba(239, 68, 68, 0.25)',
+        line=dict(color='#EF4444', width=2.5),
         name=res2['candidate_name']
     ))
 
     fig.update_layout(
         polar=dict(
-            radialaxis=dict(visible=True, range=[0, 100], color='#94A3B8', gridcolor='rgba(255, 255, 255, 0.1)'),
-            angularaxis=dict(color='#F1F5F9', gridcolor='rgba(255, 255, 255, 0.1)'),
-            bgcolor='rgba(15, 23, 42, 0.6)'
+            radialaxis=dict(visible=True, range=[0, 100], color='#475569', gridcolor='#E2E8F0'),
+            angularaxis=dict(color='#0F172A', gridcolor='#E2E8F0'),
+            bgcolor='#FFFFFF'
         ),
         paper_bgcolor='rgba(0, 0, 0, 0)',
         plot_bgcolor='rgba(0, 0, 0, 0)',
-        legend=dict(font=dict(color="#F1F5F9"), orientation="h", y=-0.1),
+        legend=dict(font=dict(color="#0F172A", size=12), orientation="h", y=-0.1),
         margin=dict(l=40, r=40, t=20, b=50),
         height=350
     )
@@ -136,4 +136,4 @@ def render_skill_tags(skills, matched=True):
     html = ""
     for skill in skills:
         html += f'<span class="skill-tag {tag_class}">{skill}</span>'
-    return html if html else '<span style="color: #94A3B8; font-size: 0.85rem;">None</span>'
+    return html if html else '<span style="color: #64748B; font-size: 0.85rem;">None</span>'
