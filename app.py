@@ -1,12 +1,233 @@
 import os
 import glob
 import io
+import re
+import json
+import sqlite3
+import hashlib
+from datetime import datetime
+
 import pandas as pd
+import numpy as np
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-# 1. Core Module Imports
+# 1. INTEGRATED SQLITE DATABASE ENGINE
+DB_PATH = "database.db"
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            full_name TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS screenings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            jd_title TEXT NOT NULL,
+            jd_text TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS candidates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            screening_id INTEGER NOT NULL,
+            candidate_name TEXT NOT NULL,
+            email TEXT,
+            phone TEXT,
+            overall_score REAL NOT NULL,
+            skill_score REAL NOT NULL,
+            semantic_score REAL NOT NULL,
+            experience_score REAL NOT NULL,
+            education_score REAL NOT NULL,
+            candidate_exp_years INTEGER NOT NULL,
+            candidate_edu TEXT NOT NULL,
+            status TEXT NOT NULL,
+            matched_skills_json TEXT,
+            missing_skills_json TEXT,
+            extra_skills_json TEXT,
+            raw_text TEXT,
+            FOREIGN KEY (screening_id) REFERENCES screenings (id)
+        )
+    """)
+
+    cursor.execute("SELECT * FROM users WHERE username = ?", ("admin",))
+    if not cursor.fetchone():
+        admin_pass_hash = hashlib.sha256("admin123".encode()).hexdigest()
+        cursor.execute(
+            "INSERT INTO users (username, password_hash, full_name) VALUES (?, ?, ?)",
+            ("admin", admin_pass_hash, "Admin Recruiter")
+        )
+
+    conn.commit()
+    conn.close()
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def db_register_user(username, password, full_name):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        p_hash = hash_password(password)
+        cursor.execute(
+            "INSERT INTO users (username, password_hash, full_name) VALUES (?, ?, ?)",
+            (username.lower().strip(), p_hash, full_name.strip())
+        )
+        conn.commit()
+        return True, "User registered successfully! Please log in now."
+    except sqlite3.IntegrityError:
+        return False, "Username already exists. Please log in or choose a different username."
+    finally:
+        conn.close()
+
+def db_authenticate_user(username, password):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    p_hash = hash_password(password)
+    cursor.execute(
+        "SELECT * FROM users WHERE username = ? AND password_hash = ?",
+        (username.lower().strip(), p_hash)
+    )
+    user = cursor.fetchone()
+    conn.close()
+    if user:
+        return dict(user)
+    return None
+
+def db_reset_password(username, new_password):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    p_hash = hash_password(new_password)
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username.lower().strip(),))
+    user = cursor.fetchone()
+    if not user:
+        conn.close()
+        return False, "Username not found in database."
+    
+    cursor.execute("UPDATE users SET password_hash = ? WHERE username = ?", (p_hash, username.lower().strip()))
+    conn.commit()
+    conn.close()
+    return True, f"Password for @{username} reset successfully! Please log in with your new password."
+
+def db_save_screening_session(user_id, jd_title, jd_text, eval_results):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO screenings (user_id, jd_title, jd_text) VALUES (?, ?, ?)",
+        (user_id, jd_title, jd_text)
+    )
+    screening_id = cursor.lastrowid
+
+    for cand in eval_results:
+        cursor.execute("""
+            INSERT INTO candidates (
+                screening_id, candidate_name, email, phone,
+                overall_score, skill_score, semantic_score, experience_score, education_score,
+                candidate_exp_years, candidate_edu, status,
+                matched_skills_json, missing_skills_json, extra_skills_json, raw_text
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            screening_id,
+            cand["candidate_name"],
+            cand.get("email", "N/A"),
+            cand.get("phone", "N/A"),
+            float(cand["overall_score"]),
+            float(cand["skill_score"]),
+            float(cand["semantic_score"]),
+            float(cand["experience_score"]),
+            float(cand["education_score"]),
+            int(cand["candidate_exp_years"]),
+            cand["candidate_edu"],
+            cand["status"],
+            json.dumps(cand.get("matched_skills", [])),
+            json.dumps(cand.get("missing_skills", [])),
+            json.dumps(cand.get("extra_skills", [])),
+            cand.get("raw_text", "")
+        ))
+
+    conn.commit()
+    conn.close()
+    return screening_id
+
+def db_get_user_screenings(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM screenings WHERE user_id = ? ORDER BY created_at DESC",
+        (user_id,)
+    )
+    screenings = cursor.fetchall()
+    conn.close()
+    return [dict(s) for s in screenings]
+
+def db_get_latest_user_screening(user_id):
+    screenings = db_get_user_screenings(user_id)
+    if screenings:
+        latest_id = screenings[0]["id"]
+        return db_load_screening_details(latest_id)
+    return None, []
+
+def db_load_screening_details(screening_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM screenings WHERE id = ?", (screening_id,))
+    screening = cursor.fetchone()
+
+    if not screening:
+        conn.close()
+        return None, []
+
+    cursor.execute("SELECT * FROM candidates WHERE screening_id = ? ORDER BY overall_score DESC", (screening_id,))
+    candidates = cursor.fetchall()
+    conn.close()
+
+    eval_results = []
+    for c in candidates:
+        cd = dict(c)
+        eval_results.append({
+            "candidate_name": cd["candidate_name"],
+            "filename": cd["candidate_name"] + ".pdf",
+            "email": cd["email"],
+            "phone": cd["phone"],
+            "overall_score": float(cd["overall_score"]),
+            "skill_score": float(cd["skill_score"]),
+            "semantic_score": float(cd["semantic_score"]),
+            "experience_score": float(cd["experience_score"]),
+            "education_score": float(cd["education_score"]),
+            "candidate_exp_years": int(cd["candidate_exp_years"]),
+            "candidate_edu": cd["candidate_edu"],
+            "status": cd["status"],
+            "matched_skills": json.loads(cd["matched_skills_json"] or "[]"),
+            "missing_skills": json.loads(cd["missing_skills_json"] or "[]"),
+            "extra_skills": json.loads(cd["extra_skills_json"] or "[]"),
+            "raw_text": cd["raw_text"]
+        })
+
+    return dict(screening), eval_results
+
+# Initialize DB on start
+init_db()
+
+# 2. CORE MODULE IMPORTS WITH ROBUST FALLBACKS
 try:
     from modules.parser import parse_resume_file
     from modules.skills import extract_skills_from_text, parse_job_requirements
@@ -20,7 +241,6 @@ except ImportError:
     from feedback import generate_candidate_feedback
     from reporter import generate_csv_report, generate_pdf_report
 
-# 2. UI Component Imports
 try:
     from components.ui import (
         render_hero_banner,
@@ -37,37 +257,6 @@ except ImportError:
         plot_comparison_radar,
         render_skill_tags
     )
-
-# 3. Database Imports
-try:
-    from modules.db import (
-        authenticate_user,
-        register_user,
-        reset_password,
-        save_screening_session,
-        get_user_screenings,
-        get_latest_user_screening,
-        load_screening_details
-    )
-except ImportError:
-    try:
-        from db import (
-            authenticate_user,
-            register_user,
-            reset_password,
-            save_screening_session,
-            get_user_screenings,
-            get_latest_user_screening,
-            load_screening_details
-        )
-    except ImportError:
-        def authenticate_user(u, p): return None
-        def register_user(u, p, n): return False, "DB initializing..."
-        def reset_password(u, np): return False, "DB initializing..."
-        def save_screening_session(u_id, t, txt, res): return 1
-        def get_user_screenings(u_id): return []
-        def get_latest_user_screening(u_id): return None, []
-        def load_screening_details(s_id): return None, []
 
 try:
     from zip_project import create_zip_archive
@@ -155,16 +344,15 @@ with st.sidebar:
             username = st.text_input("Username:", value="admin", key="login_user")
             password = st.text_input("Password:", value="admin123", type="password", key="login_pass")
             if st.button("Login to Account", use_container_width=True, type="primary"):
-                user = authenticate_user(username, password)
+                user = db_authenticate_user(username, password)
                 if user:
                     st.session_state.current_user = user
-                    # Auto restore user's latest saved screening from DB across devices!
-                    latest_s_info, latest_cands = get_latest_user_screening(user["id"])
+                    latest_s_info, latest_cands = db_get_latest_user_screening(user["id"])
                     if latest_s_info and latest_cands:
                         st.session_state.jd_title = latest_s_info["jd_title"]
                         st.session_state.jd_text = latest_s_info["jd_text"]
                         st.session_state.eval_results = latest_cands
-                        st.success(f"Welcome back {user['full_name']}! Restored your latest saved screening.")
+                        st.success(f"Welcome back {user['full_name']}! Restored your saved candidates.")
                     else:
                         st.success(f"Welcome back, {user['full_name']}!")
                     st.rerun()
@@ -176,7 +364,7 @@ with st.sidebar:
             reg_pass = st.text_input("Password:", type="password", key="reg_pass")
             if st.button("Register Account", use_container_width=True):
                 if reg_user and reg_pass and reg_name:
-                    ok, msg = register_user(reg_user, reg_pass, reg_name)
+                    ok, msg = db_register_user(reg_user, reg_pass, reg_name)
                     if ok:
                         st.success(msg)
                     else:
@@ -188,7 +376,7 @@ with st.sidebar:
             reset_new_pass = st.text_input("New Password:", type="password", key="reset_new_pass")
             if st.button("Reset Password", use_container_width=True):
                 if reset_user and reset_new_pass:
-                    ok, msg = reset_password(reset_user, reset_new_pass)
+                    ok, msg = db_reset_password(reset_user, reset_new_pass)
                     if ok:
                         st.success(msg)
                     else:
@@ -208,7 +396,7 @@ with st.sidebar:
         
         if st.session_state.eval_results and st.session_state.jd_text:
             if st.button("Save Current Results to DB", use_container_width=True):
-                s_id = save_screening_session(
+                s_id = db_save_screening_session(
                     user["id"],
                     st.session_state.jd_title,
                     st.session_state.jd_text,
@@ -216,13 +404,13 @@ with st.sidebar:
                 )
                 st.success(f"Screening session #{s_id} saved to database!")
 
-        user_sessions = get_user_screenings(user["id"])
+        user_sessions = db_get_user_screenings(user["id"])
         if user_sessions:
             session_options = {f"#{s['id']} - {s['jd_title']} ({s['created_at'][:10]})": s['id'] for s in user_sessions}
             selected_s = st.selectbox("Load Saved Screening:", list(session_options.keys()))
             if st.button("Load Selected Session", use_container_width=True):
                 s_id = session_options[selected_s]
-                s_info, s_cands = load_screening_details(s_id)
+                s_info, s_cands = db_load_screening_details(s_id)
                 if s_info:
                     st.session_state.jd_title = s_info["jd_title"]
                     st.session_state.jd_text = s_info["jd_text"]
@@ -381,7 +569,7 @@ with tab1:
                 st.session_state.eval_results = merged_results
                 
                 if st.session_state.current_user:
-                    save_screening_session(
+                    db_save_screening_session(
                         st.session_state.current_user["id"],
                         st.session_state.jd_title,
                         st.session_state.jd_text,
