@@ -6,7 +6,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-# 1. Core Module Imports (Supports both subfolders and root level)
+# 1. Core Module Imports
 try:
     from modules.parser import parse_resume_file
     from modules.skills import extract_skills_from_text, parse_job_requirements
@@ -38,11 +38,12 @@ except ImportError:
         render_skill_tags
     )
 
-# 3. Database Imports (Isolated with safe fallbacks so missing db.py never crashes app)
+# 3. Database Imports
 try:
     from modules.db import (
         authenticate_user,
         register_user,
+        reset_password,
         save_screening_session,
         get_user_screenings,
         load_screening_details
@@ -52,6 +53,7 @@ except ImportError:
         from db import (
             authenticate_user,
             register_user,
+            reset_password,
             save_screening_session,
             get_user_screenings,
             load_screening_details
@@ -60,6 +62,8 @@ except ImportError:
         def authenticate_user(u, p):
             return None
         def register_user(u, p, n):
+            return False, "DB initializing..."
+        def reset_password(u, np):
             return False, "DB initializing..."
         def save_screening_session(u_id, t, txt, res):
             return 1
@@ -148,7 +152,8 @@ with st.sidebar:
     # USER AUTHENTICATION SECTION
     if not st.session_state.current_user:
         st.subheader("🔑 Account Login & Storage")
-        auth_mode = st.radio("Select Action:", ["Login", "Register New Account"], horizontal=True)
+        st.caption("Default Admin: `admin` / `admin123`")
+        auth_mode = st.radio("Select Action:", ["Login", "Register", "Forgot Password?"], horizontal=True)
 
         if auth_mode == "Login":
             username = st.text_input("Username:", value="admin", key="login_user")
@@ -161,7 +166,7 @@ with st.sidebar:
                     st.rerun()
                 else:
                     st.error("Invalid Username or Password.")
-        else:
+        elif auth_mode == "Register":
             reg_name = st.text_input("Full Name:", key="reg_name")
             reg_user = st.text_input("Username:", key="reg_user")
             reg_pass = st.text_input("Password:", type="password", key="reg_pass")
@@ -174,6 +179,18 @@ with st.sidebar:
                         st.error(msg)
                 else:
                     st.warning("Please fill in all registration fields.")
+        else: # Forgot Password
+            reset_user = st.text_input("Account Username:", key="reset_user")
+            reset_new_pass = st.text_input("New Password:", type="password", key="reset_new_pass")
+            if st.button("Reset Password", use_container_width=True):
+                if reset_user and reset_new_pass:
+                    ok, msg = reset_password(reset_user, reset_new_pass)
+                    if ok:
+                        st.success(msg)
+                    else:
+                        st.error(msg)
+                else:
+                    st.warning("Please enter username and new password.")
     else:
         user = st.session_state.current_user
         st.markdown(f"👤 **Logged in as:** `{user['full_name']}` (`@{user['username']}`)")
@@ -320,7 +337,14 @@ with tab1:
             accept_multiple_files=True
         )
 
-        use_sample_resumes = st.checkbox("Include Pre-loaded Industry Sample Resumes", value=False)
+        col_opt1, col_opt2 = st.columns([1.2, 1])
+        with col_opt1:
+            use_sample_resumes = st.checkbox("Include Pre-loaded Sample Resumes", value=False)
+        with col_opt2:
+            if st.button("🗑️ Clear Existing Candidates", use_container_width=True):
+                st.session_state.eval_results = []
+                st.success("Cleared existing candidate history!")
+                st.rerun()
 
         st.markdown("---")
         run_screening = st.button("Run AI Screening & Candidate Ranking Engine", use_container_width=True, type="primary")
@@ -335,30 +359,32 @@ with tab1:
                         cand_data = parse_resume_file(uf)
                         candidates_list.append(cand_data)
 
-                if use_sample_resumes or not uploaded_files:
+                if use_sample_resumes:
                     sample_paths = glob.glob("sample_data/resumes/*") + glob.glob("resumes/*")
                     for sp in set(sample_paths):
                         if os.path.isfile(sp):
                             cand_data = cached_parse_resume(sp)
                             candidates_list.append(cand_data)
 
-                eval_results = []
+                existing_map = {r["candidate_name"]: r for r in st.session_state.eval_results}
+                
                 for cand in candidates_list:
                     res = evaluate_candidate(cand, st.session_state.jd_text, weights=weights)
-                    eval_results.append(res)
+                    existing_map[res["candidate_name"]] = res
 
-                eval_results.sort(key=lambda x: x["overall_score"], reverse=True)
-                st.session_state.eval_results = eval_results
+                merged_results = list(existing_map.values())
+                merged_results.sort(key=lambda x: x["overall_score"], reverse=True)
+                st.session_state.eval_results = merged_results
                 
                 if st.session_state.current_user:
                     save_screening_session(
                         st.session_state.current_user["id"],
                         st.session_state.jd_title,
                         st.session_state.jd_text,
-                        eval_results
+                        merged_results
                     )
 
-                st.success(f"Successfully evaluated {len(eval_results)} candidate resumes!")
+                st.success(f"Successfully evaluated and accumulated {len(merged_results)} candidate resumes!")
                 st.rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
@@ -406,7 +432,14 @@ with tab2:
         render_metric_cards(total_cands, top_matches, avg_score, best_cand, best_score)
         st.markdown("<br>", unsafe_allow_html=True)
 
-        st.subheader("Candidate Screening Leaderboard")
+        col_head1, col_head2 = st.columns([3, 1])
+        with col_head1:
+            st.subheader("Candidate Screening Leaderboard")
+        with col_head2:
+            if st.button("🗑️ Clear Candidates", use_container_width=True):
+                st.session_state.eval_results = []
+                st.rerun()
+
         search_query = st.text_input("Search Candidates by Name, Email, or Skill:", placeholder="Type 'Python', 'Alex', or 'PyTorch'...")
 
         display_list = filtered_results
@@ -494,7 +527,7 @@ with tab3:
             comp_data = {
                 "Metric": ["Overall Fit Score", "Skill Match Score", "Semantic Similarity", "Experience Score", "Education Score", "Experience (Years)"],
                 f"Candidate A ({res1['candidate_name']})": [f"{round(float(res1['overall_score']), 1)}%", f"{round(float(res1['skill_score']), 1)}%", f"{round(float(res1['semantic_score']), 1)}%", f"{round(float(res1['experience_score']), 1)}%", f"{round(float(res1['education_score']), 1)}%", f"{res1['candidate_exp_years']} Yrs"],
-                f"Candidate B ({res2['candidate_name']})": [f"{round(float(res2['overall_score']), 1)}%", f"{round(float(res2['skill_score']), 1)}%", f"{round(float(res2['semantic_score']), 1)}%", f"{round(float(res2['experience_score']), 1)}%", f"{round(float(res2['education_score']), 1)}%", f"{res2['candidate_exp_years']} Yrs"]
+                f"Candidate B ({res2['candidate_name']})": [f"{round(float(res2['overall_score']), 1)}%", f"{round(float(res2['skill_score']), 1)}%", f"{round(float(res2['semantic_score']), 1)}%", f"{round(float(res2['experience_score']), 1)}%", f"{res2['candidate_exp_years']} Yrs"]
             }
             st.dataframe(pd.DataFrame(comp_data), hide_index=True, use_container_width=True)
 
