@@ -13,12 +13,26 @@ try:
     from modules.scorer import evaluate_candidate
     from modules.feedback import generate_candidate_feedback
     from modules.reporter import generate_csv_report, generate_pdf_report
+    from modules.db import (
+        authenticate_user,
+        register_user,
+        save_screening_session,
+        get_user_screenings,
+        load_screening_details
+    )
 except ImportError:
     from parser import parse_resume_file
     from skills import extract_skills_from_text, parse_job_requirements
     from scorer import evaluate_candidate
     from feedback import generate_candidate_feedback
     from reporter import generate_csv_report, generate_pdf_report
+    from db import (
+        authenticate_user,
+        register_user,
+        save_screening_session,
+        get_user_screenings,
+        load_screening_details
+    )
 
 try:
     from components.ui import (
@@ -71,11 +85,13 @@ load_css()
 if not os.path.exists("ai_resume_screening_system.zip"):
     create_zip_archive()
 
-# 2. Session State & Cached Loader Helpers for Blazing Speed
+# 2. Session State & Cached Loader Helpers
 @st.cache_data(show_spinner=False)
 def cached_parse_resume(filepath):
     return parse_resume_file(filepath)
 
+if "current_user" not in st.session_state:
+    st.session_state.current_user = None
 if "eval_results" not in st.session_state:
     st.session_state.eval_results = []
 if "jd_text" not in st.session_state:
@@ -106,20 +122,81 @@ def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
     results.sort(key=lambda x: x["overall_score"], reverse=True)
     st.session_state.eval_results = results
 
-# Default load if state empty
-if not st.session_state.eval_results:
-    load_sample_data()
-
-# 3. Sidebar Controls & Customization
+# 3. Sidebar Authentication & Controls
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/000000/brain--v1.png", width=64)
+    st.image("https://img.icons8.com/color/96/000000/brain--v1.png", width=60)
     st.title("Control Panel")
     st.markdown("---")
 
-    st.subheader("Quick Demo Loader")
-    if st.button("Load Pre-built Showcase Data", use_container_width=True):
+    # USER AUTHENTICATION SECTION
+    if not st.session_state.current_user:
+        st.subheader("🔑 Account Login & Storage")
+        auth_mode = st.radio("Select Action:", ["Login", "Register New Account"], horizontal=True)
+
+        if auth_mode == "Login":
+            username = st.text_input("Username:", value="admin", key="login_user")
+            password = st.text_input("Password:", value="admin123", type="password", key="login_pass")
+            if st.button("Login to Account", use_container_width=True, type="primary"):
+                user = authenticate_user(username, password)
+                if user:
+                    st.session_state.current_user = user
+                    st.success(f"Welcome back, {user['full_name']}!")
+                    st.rerun()
+                else:
+                    st.error("Invalid Username or Password.")
+        else:
+            reg_name = st.text_input("Full Name:", key="reg_name")
+            reg_user = st.text_input("Username:", key="reg_user")
+            reg_pass = st.text_input("Password:", type="password", key="reg_pass")
+            if st.button("Register Account", use_container_width=True):
+                if reg_user and reg_pass and reg_name:
+                    ok, msg = register_user(reg_user, reg_pass, reg_name)
+                    if ok:
+                        st.success(msg)
+                    else:
+                        st.error(msg)
+                else:
+                    st.warning("Please fill in all registration fields.")
+    else:
+        user = st.session_state.current_user
+        st.markdown(f"👤 **Logged in as:** `{user['full_name']}` (`@{user['username']}`)")
+        
+        if st.button("Logout", use_container_width=True):
+            st.session_state.current_user = None
+            st.rerun()
+
+        st.markdown("---")
+        st.subheader("💾 Saved Screening Sessions")
+        
+        if st.session_state.eval_results and st.session_state.jd_text:
+            if st.button("Save Current Results to DB", use_container_width=True):
+                s_id = save_screening_session(
+                    user["id"],
+                    st.session_state.jd_title,
+                    st.session_state.jd_text,
+                    st.session_state.eval_results
+                )
+                st.success(f"Screening session #{s_id} saved to database!")
+
+        user_sessions = get_user_screenings(user["id"])
+        if user_sessions:
+            session_options = {f"#{s['id']} - {s['jd_title']} ({s['created_at'][:10]})": s['id'] for s in user_sessions}
+            selected_s = st.selectbox("Load Saved Screening:", list(session_options.keys()))
+            if st.button("Load Selected Session", use_container_width=True):
+                s_id = session_options[selected_s]
+                s_info, s_cands = load_screening_details(s_id)
+                if s_info:
+                    st.session_state.jd_title = s_info["jd_title"]
+                    st.session_state.jd_text = s_info["jd_text"]
+                    st.session_state.eval_results = s_cands
+                    st.success("Loaded saved screening session!")
+                    st.rerun()
+
+    st.markdown("---")
+    st.subheader("⚡ Quick Demo Loader")
+    if st.button("Load Sample Showcase Data", use_container_width=True):
         load_sample_data()
-        st.success("Loaded pre-built resumes & JD!")
+        st.success("Loaded sample resumes & JD!")
         st.rerun()
 
     st.markdown("---")
@@ -131,7 +208,6 @@ with st.sidebar:
     w_exp = st.slider("Experience Weight", 0.0, 1.0, 0.15, 0.05)
     w_edu = st.slider("Education Weight", 0.0, 1.0, 0.10, 0.05)
 
-    # Normalize weights
     total_w = w_skill + w_semantic + w_exp + w_edu
     if total_w > 0:
         weights = {
@@ -155,7 +231,7 @@ with st.sidebar:
 # 4. Main App Layout & Header
 render_hero_banner()
 
-# Navigation Tabs without Emojis (Clean Corporate Pill Design)
+# Navigation Tabs
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "Ingestion & Setup",
     "Screening Leaderboard",
@@ -227,7 +303,7 @@ with tab1:
             accept_multiple_files=True
         )
 
-        use_sample_resumes = st.checkbox("Include Pre-loaded Industry Sample Resumes", value=True)
+        use_sample_resumes = st.checkbox("Include Pre-loaded Industry Sample Resumes", value=False)
 
         st.markdown("---")
         run_screening = st.button("Run AI Screening & Candidate Ranking Engine", use_container_width=True, type="primary")
@@ -256,6 +332,15 @@ with tab1:
 
                 eval_results.sort(key=lambda x: x["overall_score"], reverse=True)
                 st.session_state.eval_results = eval_results
+                
+                if st.session_state.current_user:
+                    save_screening_session(
+                        st.session_state.current_user["id"],
+                        st.session_state.jd_title,
+                        st.session_state.jd_text,
+                        eval_results
+                    )
+
                 st.success(f"Successfully evaluated {len(eval_results)} candidate resumes!")
                 st.rerun()
 
@@ -320,9 +405,9 @@ with tab2:
             table_rows.append({
                 "Rank": f"#{rank}",
                 "Candidate Name": res["candidate_name"],
-                "Overall Fit": f"{res['overall_score']}%",
-                "Skill Score": f"{res['skill_score']}%",
-                "Semantic Sim": f"{res['semantic_score']}%",
+                "Overall Fit": f"{round(float(res['overall_score']), 1)}%",
+                "Skill Score": f"{round(float(res['skill_score']), 1)}%",
+                "Semantic Sim": f"{round(float(res['semantic_score']), 1)}%",
                 "Experience": f"{res['candidate_exp_years']} Yrs",
                 "Education": res["candidate_edu"],
                 "Status": clean_status(res["status"]),
@@ -333,10 +418,6 @@ with tab2:
         st.dataframe(
             df_table,
             use_container_width=True,
-            column_config={
-                "Overall Fit": st.column_config.ProgressColumn("Overall Fit", format="%s", min_value=0, max_value=100),
-                "Skill Score": st.column_config.ProgressColumn("Skill Score", format="%s", min_value=0, max_value=100),
-            },
             hide_index=True
         )
 
@@ -344,7 +425,7 @@ with tab2:
         st.subheader("Candidate Profiles & Skill Matrices")
 
         for rank, res in enumerate(display_list, 1):
-            with st.expander(f"#{rank} | {res['candidate_name']} ({clean_status(res['status'])}) — Overall Fit: {res['overall_score']}%"):
+            with st.expander(f"#{rank} | {res['candidate_name']} ({clean_status(res['status'])}) — Overall Fit: {round(float(res['overall_score']), 1)}%"):
                 col_info, col_chart = st.columns([1.2, 1])
 
                 with col_info:
@@ -395,8 +476,8 @@ with tab3:
             st.markdown("#### Quantitative Breakdown")
             comp_data = {
                 "Metric": ["Overall Fit Score", "Skill Match Score", "Semantic Similarity", "Experience Score", "Education Score", "Experience (Years)"],
-                f"Candidate A ({res1['candidate_name']})": [f"{res1['overall_score']}%", f"{res1['skill_score']}%", f"{res1['semantic_score']}%", f"{res1['experience_score']}%", f"{res1['education_score']}%", f"{res1['candidate_exp_years']} Yrs"],
-                f"Candidate B ({res2['candidate_name']})": [f"{res2['overall_score']}%", f"{res2['skill_score']}%", f"{res2['semantic_score']}%", f"{res2['experience_score']}%", f"{res2['education_score']}%", f"{res2['candidate_exp_years']} Yrs"]
+                f"Candidate A ({res1['candidate_name']})": [f"{round(float(res1['overall_score']), 1)}%", f"{round(float(res1['skill_score']), 1)}%", f"{round(float(res1['semantic_score']), 1)}%", f"{round(float(res1['experience_score']), 1)}%", f"{round(float(res1['education_score']), 1)}%", f"{res1['candidate_exp_years']} Yrs"],
+                f"Candidate B ({res2['candidate_name']})": [f"{round(float(res2['overall_score']), 1)}%", f"{round(float(res2['skill_score']), 1)}%", f"{round(float(res2['semantic_score']), 1)}%", f"{round(float(res2['experience_score']), 1)}%", f"{round(float(res2['education_score']), 1)}%", f"{res2['candidate_exp_years']} Yrs"]
             }
             st.dataframe(pd.DataFrame(comp_data), hide_index=True, use_container_width=True)
 
