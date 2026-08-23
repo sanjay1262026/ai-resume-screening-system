@@ -224,7 +224,6 @@ def db_load_screening_details(screening_id):
 
     return dict(screening), eval_results
 
-# Initialize DB on start
 init_db()
 
 # 2. CORE MODULE IMPORTS WITH ROBUST FALLBACKS
@@ -328,6 +327,14 @@ def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
     results.sort(key=lambda x: x["overall_score"], reverse=True)
     st.session_state.eval_results = results
 
+# AUTO RESTORE: If user is logged in, automatically restore their latest saved screening from DB
+if st.session_state.current_user and not st.session_state.eval_results:
+    latest_s_info, latest_cands = db_get_latest_user_screening(st.session_state.current_user["id"])
+    if latest_s_info and latest_cands:
+        st.session_state.jd_title = latest_s_info["jd_title"]
+        st.session_state.jd_text = latest_s_info["jd_text"]
+        st.session_state.eval_results = latest_cands
+
 # Sidebar Authentication & Controls
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/000000/brain--v1.png", width=60)
@@ -352,7 +359,7 @@ with st.sidebar:
                         st.session_state.jd_title = latest_s_info["jd_title"]
                         st.session_state.jd_text = latest_s_info["jd_text"]
                         st.session_state.eval_results = latest_cands
-                        st.success(f"Welcome back {user['full_name']}! Restored your saved candidates.")
+                        st.success(f"Welcome back {user['full_name']}! Auto-restored your saved screening.")
                     else:
                         st.success(f"Welcome back, {user['full_name']}!")
                     st.rerun()
@@ -389,6 +396,7 @@ with st.sidebar:
         
         if st.button("Logout", use_container_width=True):
             st.session_state.current_user = None
+            st.session_state.eval_results = []
             st.rerun()
 
         st.markdown("---")
@@ -568,6 +576,7 @@ with tab1:
                 merged_results.sort(key=lambda x: x["overall_score"], reverse=True)
                 st.session_state.eval_results = merged_results
                 
+                # AUTO SAVE TO DB: Saves automatically when logged in!
                 if st.session_state.current_user:
                     db_save_screening_session(
                         st.session_state.current_user["id"],
@@ -828,7 +837,7 @@ with tab4:
                 plot_bgcolor='rgba(15,23,42,0.6)',
                 font=dict(color="#F1F5F9")
             )
-            st.plotly_chart(fig_freq, use_container_width=True)
+            st.plotly_chart(freq_df, use_container_width=True)
 
 # ==========================================
 # TAB 5: Export & Reports
