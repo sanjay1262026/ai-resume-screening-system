@@ -46,6 +46,7 @@ try:
         reset_password,
         save_screening_session,
         get_user_screenings,
+        get_latest_user_screening,
         load_screening_details
     )
 except ImportError:
@@ -56,27 +57,22 @@ except ImportError:
             reset_password,
             save_screening_session,
             get_user_screenings,
+            get_latest_user_screening,
             load_screening_details
         )
     except ImportError:
-        def authenticate_user(u, p):
-            return None
-        def register_user(u, p, n):
-            return False, "DB initializing..."
-        def reset_password(u, np):
-            return False, "DB initializing..."
-        def save_screening_session(u_id, t, txt, res):
-            return 1
-        def get_user_screenings(u_id):
-            return []
-        def load_screening_details(s_id):
-            return None, []
+        def authenticate_user(u, p): return None
+        def register_user(u, p, n): return False, "DB initializing..."
+        def reset_password(u, np): return False, "DB initializing..."
+        def save_screening_session(u_id, t, txt, res): return 1
+        def get_user_screenings(u_id): return []
+        def get_latest_user_screening(u_id): return None, []
+        def load_screening_details(s_id): return None, []
 
 try:
     from zip_project import create_zip_archive
 except ImportError:
-    def create_zip_archive():
-        pass
+    def create_zip_archive(): pass
 
 # Page Configuration & Theme
 st.set_page_config(
@@ -162,7 +158,15 @@ with st.sidebar:
                 user = authenticate_user(username, password)
                 if user:
                     st.session_state.current_user = user
-                    st.success(f"Welcome back, {user['full_name']}!")
+                    # Auto restore user's latest saved screening from DB across devices!
+                    latest_s_info, latest_cands = get_latest_user_screening(user["id"])
+                    if latest_s_info and latest_cands:
+                        st.session_state.jd_title = latest_s_info["jd_title"]
+                        st.session_state.jd_text = latest_s_info["jd_text"]
+                        st.session_state.eval_results = latest_cands
+                        st.success(f"Welcome back {user['full_name']}! Restored your latest saved screening.")
+                    else:
+                        st.success(f"Welcome back, {user['full_name']}!")
                     st.rerun()
                 else:
                     st.error("Invalid Username or Password.")
@@ -524,11 +528,14 @@ with tab3:
 
         with col_stats:
             st.markdown("#### Quantitative Breakdown")
-            comp_data = {
-                "Metric": ["Overall Fit Score", "Skill Match Score", "Semantic Similarity", "Experience Score", "Education Score", "Experience (Years)"],
-                f"Candidate A ({res1['candidate_name']})": [f"{round(float(res1['overall_score']), 1)}%", f"{round(float(res1['skill_score']), 1)}%", f"{round(float(res1['semantic_score']), 1)}%", f"{round(float(res1['experience_score']), 1)}%", f"{round(float(res1['education_score']), 1)}%", f"{res1['candidate_exp_years']} Yrs"],
-                f"Candidate B ({res2['candidate_name']})": [f"{round(float(res2['overall_score']), 1)}%", f"{round(float(res2['skill_score']), 1)}%", f"{round(float(res2['semantic_score']), 1)}%", f"{round(float(res2['experience_score']), 1)}%", f"{res2['candidate_exp_years']} Yrs"]
-            }
+            comp_data = [
+                {"Metric": "Overall Fit Score", "Candidate A": f"{round(float(res1['overall_score']), 1)}%", "Candidate B": f"{round(float(res2['overall_score']), 1)}%"},
+                {"Metric": "Skill Match Score", "Candidate A": f"{round(float(res1['skill_score']), 1)}%", "Candidate B": f"{round(float(res2['skill_score']), 1)}%"},
+                {"Metric": "Semantic Similarity", "Candidate A": f"{round(float(res1['semantic_score']), 1)}%", "Candidate B": f"{round(float(res2['semantic_score']), 1)}%"},
+                {"Metric": "Experience Score", "Candidate A": f"{round(float(res1['experience_score']), 1)}%", "Candidate B": f"{round(float(res2['experience_score']), 1)}%"},
+                {"Metric": "Education Score", "Candidate A": f"{round(float(res1['education_score']), 1)}%", "Candidate B": f"{round(float(res2['education_score']), 1)}%"},
+                {"Metric": "Experience (Years)", "Candidate A": f"{res1['candidate_exp_years']} Yrs", "Candidate B": f"{res2['candidate_exp_years']} Yrs"}
+            ]
             st.dataframe(pd.DataFrame(comp_data), hide_index=True, use_container_width=True)
 
         st.markdown("---")
