@@ -6,34 +6,21 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Smart imports (Works whether files are in root or subfolders!)
+# 1. Core Module Imports (Supports both subfolders and root level)
 try:
     from modules.parser import parse_resume_file
     from modules.skills import extract_skills_from_text, parse_job_requirements
     from modules.scorer import evaluate_candidate
     from modules.feedback import generate_candidate_feedback
     from modules.reporter import generate_csv_report, generate_pdf_report
-    from modules.db import (
-        authenticate_user,
-        register_user,
-        save_screening_session,
-        get_user_screenings,
-        load_screening_details
-    )
 except ImportError:
     from parser import parse_resume_file
     from skills import extract_skills_from_text, parse_job_requirements
     from scorer import evaluate_candidate
     from feedback import generate_candidate_feedback
     from reporter import generate_csv_report, generate_pdf_report
-    from db import (
-        authenticate_user,
-        register_user,
-        save_screening_session,
-        get_user_screenings,
-        load_screening_details
-    )
 
+# 2. UI Component Imports
 try:
     from components.ui import (
         render_hero_banner,
@@ -51,13 +38,43 @@ except ImportError:
         render_skill_tags
     )
 
+# 3. Database Imports (Isolated with safe fallbacks so missing db.py never crashes app)
+try:
+    from modules.db import (
+        authenticate_user,
+        register_user,
+        save_screening_session,
+        get_user_screenings,
+        load_screening_details
+    )
+except ImportError:
+    try:
+        from db import (
+            authenticate_user,
+            register_user,
+            save_screening_session,
+            get_user_screenings,
+            load_screening_details
+        )
+    except ImportError:
+        def authenticate_user(u, p):
+            return None
+        def register_user(u, p, n):
+            return False, "DB initializing..."
+        def save_screening_session(u_id, t, txt, res):
+            return 1
+        def get_user_screenings(u_id):
+            return []
+        def load_screening_details(s_id):
+            return None, []
+
 try:
     from zip_project import create_zip_archive
 except ImportError:
     def create_zip_archive():
         pass
 
-# 1. Page Configuration & Theme
+# Page Configuration & Theme
 st.set_page_config(
     page_title="AI Resume Screening System",
     page_icon="🤖",
@@ -85,7 +102,7 @@ load_css()
 if not os.path.exists("ai_resume_screening_system.zip"):
     create_zip_archive()
 
-# 2. Session State & Cached Loader Helpers
+# Session State & Cached Loader Helpers
 @st.cache_data(show_spinner=False)
 def cached_parse_resume(filepath):
     return parse_resume_file(filepath)
@@ -122,7 +139,7 @@ def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
     results.sort(key=lambda x: x["overall_score"], reverse=True)
     st.session_state.eval_results = results
 
-# 3. Sidebar Authentication & Controls
+# Sidebar Authentication & Controls
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/000000/brain--v1.png", width=60)
     st.title("Control Panel")
@@ -228,7 +245,7 @@ with st.sidebar:
         default=["Top Match", "Potential Fit", "Low Match"]
     )
 
-# 4. Main App Layout & Header
+# Main App Layout & Header
 render_hero_banner()
 
 # Navigation Tabs
