@@ -18,7 +18,6 @@ def extract_text_from_pdf(file_bytes_or_path):
                 text += extracted + "\n"
     except Exception as e:
         print(f"Error reading PDF: {e}")
-        # Fallback to pdfminer if pypdf fails
         try:
             from pdfminer.high_level import extract_text as pdfminer_extract
             if isinstance(file_bytes_or_path, bytes):
@@ -52,10 +51,26 @@ def extract_text_from_docx(file_bytes_or_path):
         print(f"Error reading DOCX: {e}")
     return text.strip()
 
+def validate_resume_structure(text):
+    """
+    Checks whether uploaded document contains standard resume section indicators.
+    Returns tuple (is_resume: bool, warning_message: str).
+    """
+    if not text or len(text.strip()) < 40:
+        return False, "⚠️ Non-Resume Document / Unreadable File Content"
+        
+    text_lower = text.lower()
+    resume_keywords = ['experience', 'education', 'skills', 'projects', 'summary', 'employment', 'curriculum', 'cv', 'work history', 'contact']
+    matches = sum(1 for kw in resume_keywords if kw in text_lower)
+    
+    if matches < 2:
+        return False, "⚠️ Potential Non-Resume File (Lacks Standard Resume Sections)"
+    return True, "Valid Resume Format"
+
 def parse_resume_file(uploaded_file):
     """
-    Accepts Streamlit UploadedFile object or filepath tuple (filename, bytes/path).
-    Returns dict with extracted text, email, phone, candidate_name, experience_years, education.
+    Accepts Streamlit UploadedFile object or filepath tuple.
+    Returns dict with extracted text, contact details, experience, and document validity status.
     """
     if hasattr(uploaded_file, "name"):
         filename = uploaded_file.name
@@ -91,6 +106,7 @@ def parse_resume_file(uploaded_file):
     candidate_name = extract_candidate_name(raw_text, filename)
     exp_years = extract_experience_years(raw_text)
     education = extract_education_level(raw_text)
+    is_valid_resume, doc_warning = validate_resume_structure(raw_text)
 
     return {
         "filename": filename,
@@ -99,7 +115,9 @@ def parse_resume_file(uploaded_file):
         "email": email,
         "phone": phone,
         "experience_years": exp_years,
-        "education": education
+        "education": education,
+        "is_valid_resume": is_valid_resume,
+        "doc_warning": doc_warning
     }
 
 def extract_email(text):
@@ -116,20 +134,14 @@ def extract_candidate_name(text, filename):
     lines = [line.strip() for line in text.split('\n') if line.strip()]
     if lines:
         first_line = lines[0]
-        # Clean potential header garbage
-        if len(first_line) < 40 and not any(kw in first_line.lower() for kw in ['resume', 'curriculum', 'page', 'email', 'http', '@']):
+        if len(first_line) < 40 and not any(kw in first_line.lower() for kw in ['resume', 'curriculum', 'page', 'email', 'http', '@', 'chapter', 'lecture']):
             return first_line.title()
     
-    # Clean filename as fallback
     clean_name = re.sub(r'[_#-]', ' ', filename.split('.')[0])
     clean_name = re.sub(r'(?i)(resume|cv|jd|job|description|senior|junior|lead)', '', clean_name).strip()
     return clean_name.title() if clean_name else "Candidate"
 
 def extract_experience_years(text):
-    """
-    Scans for explicit year mentions like '5+ years experience', '3 yrs exp',
-    or calculates span from year patterns like '2019 - Present'.
-    """
     patterns = [
         r'(\d+)\+?\s*(?:years?|yrs)\s*(?:of)?\s*(?:experience|exp)?',
         r'(?:experience|exp)\s*:\s*(\d+)\+?\s*(?:years?|yrs)',
@@ -145,7 +157,6 @@ def extract_experience_years(text):
             except ValueError:
                 pass
 
-    # Fallback to year date ranges (e.g. 2019 - 2023 or 2021 - Present)
     year_matches = re.findall(r'\b(20\d{2}|19\d{2})\b', text)
     if year_matches:
         years = sorted([int(y) for y in year_matches if 1990 <= int(y) <= 2026])
@@ -153,7 +164,7 @@ def extract_experience_years(text):
             span = max(years) - min(years)
             if 0 < span <= 30:
                 return span
-    return 1 # Default 1 year fallback if not detected
+    return 1
 
 def extract_education_level(text):
     text_lower = text.lower()
