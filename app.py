@@ -71,7 +71,11 @@ load_css()
 if not os.path.exists("ai_resume_screening_system.zip"):
     create_zip_archive()
 
-# 2. Session State Initialization
+# 2. Session State & Cached Loader Helpers for Blazing Speed
+@st.cache_data(show_spinner=False)
+def cached_parse_resume(filepath):
+    return parse_resume_file(filepath)
+
 if "eval_results" not in st.session_state:
     st.session_state.eval_results = []
 if "jd_text" not in st.session_state:
@@ -79,7 +83,6 @@ if "jd_text" not in st.session_state:
 if "jd_title" not in st.session_state:
     st.session_state.jd_title = "Senior AI / Machine Learning Engineer"
 
-# Pre-loaded sample loader helper
 def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
     jd_path = resolve_path(
         os.path.join("sample_data/job_descriptions", jd_filename),
@@ -96,7 +99,7 @@ def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
     unique_paths = list(set(resume_files))
     for filepath in unique_paths:
         if os.path.isfile(filepath):
-            cand_data = parse_resume_file(filepath)
+            cand_data = cached_parse_resume(filepath)
             eval_res = evaluate_candidate(cand_data, st.session_state.jd_text)
             results.append(eval_res)
 
@@ -113,14 +116,14 @@ with st.sidebar:
     st.title("Control Panel")
     st.markdown("---")
 
-    st.subheader("⚡ Quick Demo Loader")
-    if st.button("🔥 Load Pre-built Showcase Data", use_container_width=True):
+    st.subheader("Quick Demo Loader")
+    if st.button("Load Pre-built Showcase Data", use_container_width=True):
         load_sample_data()
         st.success("Loaded pre-built resumes & JD!")
         st.rerun()
 
     st.markdown("---")
-    st.subheader("⚖️ Scoring Weight Matrix")
+    st.subheader("Scoring Weight Matrix")
     st.caption("Adjust algorithm priorities dynamically:")
 
     w_skill = st.slider("Skill Match Weight", 0.0, 1.0, 0.40, 0.05)
@@ -141,25 +144,25 @@ with st.sidebar:
         weights = {'skill': 0.40, 'semantic': 0.35, 'experience': 0.15, 'education': 0.10}
 
     st.markdown("---")
-    st.subheader("🔍 Leaderboard Filters")
+    st.subheader("Leaderboard Filters")
     min_score_filter = st.slider("Min Overall Fit (%)", 0, 100, 0, 5)
     status_filter = st.multiselect(
         "Filter by Match Status",
-        ["Top Match 🟢", "Potential Fit 🟡", "Low Match 🔴"],
-        default=["Top Match 🟢", "Potential Fit 🟡", "Low Match 🔴"]
+        ["Top Match", "Potential Fit", "Low Match"],
+        default=["Top Match", "Potential Fit", "Low Match"]
     )
 
 # 4. Main App Layout & Header
 render_hero_banner()
 
-# Navigation Tabs
+# Navigation Tabs without Emojis (Clean Corporate Pill Design)
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🎯 Ingestion & Setup",
-    "📊 Screening Leaderboard",
-    "🔍 Candidate Comparison & AI Feedback",
-    "📈 Skill Gap Analytics",
-    "📑 Export & Reports",
-    "🧠 AI Engine & Math"
+    "Ingestion & Setup",
+    "Screening Leaderboard",
+    "Candidate Comparison & AI Feedback",
+    "Skill Gap Analytics",
+    "Export & Reports",
+    "AI Engine & Math"
 ])
 
 # ==========================================
@@ -207,7 +210,7 @@ with tab1:
         if jd_input.strip():
             reqs = parse_job_requirements(jd_input)
             st.markdown("---")
-            st.markdown("#### 🔑 Extracted Job Criteria:")
+            st.markdown("#### Extracted Job Criteria:")
             st.markdown(f"**Required Experience:** `{reqs['min_experience_years']}+ Years` | **Minimum Degree:** `{reqs['min_education']}`")
             st.markdown("**Target Skills Identified:**")
             st.markdown(render_skill_tags(reqs["required_skills"], matched=True), unsafe_allow_html=True)
@@ -227,7 +230,7 @@ with tab1:
         use_sample_resumes = st.checkbox("Include Pre-loaded Industry Sample Resumes", value=True)
 
         st.markdown("---")
-        run_screening = st.button("🚀 Run AI Screening & Candidate Ranking Engine", use_container_width=True, type="primary")
+        run_screening = st.button("Run AI Screening & Candidate Ranking Engine", use_container_width=True, type="primary")
 
         if run_screening:
             if not st.session_state.jd_text.strip():
@@ -243,7 +246,7 @@ with tab1:
                     sample_paths = glob.glob("sample_data/resumes/*") + glob.glob("resumes/*")
                     for sp in set(sample_paths):
                         if os.path.isfile(sp):
-                            cand_data = parse_resume_file(sp)
+                            cand_data = cached_parse_resume(sp)
                             candidates_list.append(cand_data)
 
                 eval_results = []
@@ -277,9 +280,12 @@ if st.session_state.eval_results and st.session_state.jd_text:
     updated_results.sort(key=lambda x: x["overall_score"], reverse=True)
     st.session_state.eval_results = updated_results
 
+def clean_status(st_str):
+    return st_str.replace("🟢", "").replace("🟡", "").replace("🔴", "").strip()
+
 filtered_results = [
     r for r in st.session_state.eval_results
-    if r["overall_score"] >= min_score_filter and r["status"] in status_filter
+    if r["overall_score"] >= min_score_filter and clean_status(r["status"]) in [clean_status(sf) for sf in status_filter]
 ]
 
 # ==========================================
@@ -298,8 +304,8 @@ with tab2:
         render_metric_cards(total_cands, top_matches, avg_score, best_cand, best_score)
         st.markdown("<br>", unsafe_allow_html=True)
 
-        st.subheader("🏆 Candidate Screening Leaderboard")
-        search_query = st.text_input("🔍 Search Candidates by Name, Email, or Skill:", placeholder="Type 'Python', 'Alex', or 'PyTorch'...")
+        st.subheader("Candidate Screening Leaderboard")
+        search_query = st.text_input("Search Candidates by Name, Email, or Skill:", placeholder="Type 'Python', 'Alex', or 'PyTorch'...")
 
         display_list = filtered_results
         if search_query.strip():
@@ -319,7 +325,7 @@ with tab2:
                 "Semantic Sim": f"{res['semantic_score']}%",
                 "Experience": f"{res['candidate_exp_years']} Yrs",
                 "Education": res["candidate_edu"],
-                "Status": res["status"],
+                "Status": clean_status(res["status"]),
                 "Matched Skills Count": len(res["matched_skills"])
             })
 
@@ -335,16 +341,16 @@ with tab2:
         )
 
         st.markdown("---")
-        st.subheader("📋 Candidate Profiles & Skill Matrices")
+        st.subheader("Candidate Profiles & Skill Matrices")
 
         for rank, res in enumerate(display_list, 1):
-            with st.expander(f"#{rank} | {res['candidate_name']} ({res['status']}) — Overall Fit: {res['overall_score']}%"):
+            with st.expander(f"#{rank} | {res['candidate_name']} ({clean_status(res['status'])}) — Overall Fit: {res['overall_score']}%"):
                 col_info, col_chart = st.columns([1.2, 1])
 
                 with col_info:
                     st.markdown(f"### {res['candidate_name']}")
-                    st.markdown(f"📧 **Email:** `{res['email']}` | 📞 **Phone:** `{res['phone']}`")
-                    st.markdown(f"💼 **Experience:** `{res['candidate_exp_years']} Years` | 🎓 **Education:** `{res['candidate_edu']}`")
+                    st.markdown(f"**Email:** `{res['email']}` | **Phone:** `{res['phone']}`")
+                    st.markdown(f"**Experience:** `{res['candidate_exp_years']} Years` | **Education:** `{res['candidate_edu']}`")
                     st.markdown("---")
 
                     st.markdown("**Matched Required Skills:**")
@@ -367,7 +373,7 @@ with tab3:
     if len(st.session_state.eval_results) < 2:
         st.info("At least 2 evaluated candidates are required for side-by-side comparison.")
     else:
-        st.subheader("⚔️ Side-by-Side Candidate Head-to-Head Comparison")
+        st.subheader("Side-by-Side Candidate Head-to-Head Comparison")
         cand_names = [r["candidate_name"] for r in st.session_state.eval_results]
         
         col_select1, col_select2 = st.columns(2)
@@ -395,25 +401,25 @@ with tab3:
             st.dataframe(pd.DataFrame(comp_data), hide_index=True, use_container_width=True)
 
         st.markdown("---")
-        st.subheader("🤖 Automated AI Feedback & Technical Interview Generator")
+        st.subheader("Automated AI Feedback & Technical Interview Generator")
         col_fb1, col_fb2 = st.columns(2)
 
         for col, res in zip([col_fb1, col_fb2], [res1, res2]):
             with col:
                 st.markdown(f'<div class="glass-card">', unsafe_allow_html=True)
                 fb = generate_candidate_feedback(res)
-                st.markdown(f"### {res['candidate_name']} ({res['status']})")
+                st.markdown(f"### {res['candidate_name']} ({clean_status(res['status'])})")
                 st.markdown(f"**AI Assessment:** {fb['summary']}")
 
-                st.markdown("#### ✅ Key Strengths")
+                st.markdown("#### Key Strengths")
                 for s in fb["strengths"]:
                     st.markdown(f"- {s}")
 
-                st.markdown("#### ⚠️ Skill & Qualification Gaps")
+                st.markdown("#### Skill & Qualification Gaps")
                 for w in fb["weaknesses"]:
                     st.markdown(f"- {w}")
 
-                st.markdown("#### 🎯 Tailored Interview Questions")
+                st.markdown("#### Tailored Interview Questions")
                 for q in fb["interview_questions"]:
                     st.markdown(f"**{q}**")
 
@@ -426,7 +432,7 @@ with tab4:
     if not st.session_state.eval_results:
         st.warning("No evaluation data available.")
     else:
-        st.subheader("📊 Candidate Pool Skill Analytics")
+        st.subheader("Candidate Pool Skill Analytics")
         col_a1, col_a2 = st.columns(2)
 
         with col_a1:
@@ -502,17 +508,17 @@ with tab4:
 # TAB 5: Export & Reports
 # ==========================================
 with tab5:
-    st.subheader("📑 Export Candidate Screening Reports")
+    st.subheader("Export Candidate Screening Reports")
     st.write("Generate official candidate screening reports for HR records or hiring committee reviews.")
     col_exp1, col_exp2 = st.columns(2)
 
     with col_exp1:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("### 📊 Export CSV Data")
+        st.markdown("### Export CSV Data")
         st.write("Download structured CSV file with candidate scores, contact info, and matched/missing skills.")
         csv_bytes = generate_csv_report(st.session_state.eval_results)
         st.download_button(
-            label="📥 Download CSV Report",
+            label="Download CSV Report",
             data=csv_bytes,
             file_name="candidate_screening_leaderboard.csv",
             mime="text/csv",
@@ -522,11 +528,11 @@ with tab5:
 
     with col_exp2:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("### 📄 Export PDF Report")
+        st.markdown("### Export PDF Report")
         st.write("Generate a formatted executive summary PDF report with candidate rankings and detailed breakdowns.")
         pdf_bytes = generate_pdf_report(st.session_state.eval_results, st.session_state.jd_title)
         st.download_button(
-            label="📥 Download PDF Summary Report",
+            label="Download PDF Summary Report",
             data=pdf_bytes,
             file_name="candidate_screening_executive_report.pdf",
             mime="application/pdf",
@@ -538,7 +544,7 @@ with tab5:
 # TAB 6: AI Engine & Math Explainability
 # ==========================================
 with tab6:
-    st.subheader("🧠 System Architecture & Algorithm Mechanics")
+    st.subheader("System Architecture & Algorithm Mechanics")
 
     st.markdown("""
         <div class="glass-card">
