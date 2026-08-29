@@ -13,7 +13,9 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
+# ----------------------------------------------------
 # 1. INTEGRATED SQLITE DATABASE ENGINE
+# ----------------------------------------------------
 DB_PATH = "database.db"
 
 def get_db_connection():
@@ -224,9 +226,12 @@ def db_load_screening_details(screening_id):
 
     return dict(screening), eval_results
 
+# Initialize DB on start
 init_db()
 
+# ----------------------------------------------------
 # 2. CORE MODULE IMPORTS WITH ROBUST FALLBACKS
+# ----------------------------------------------------
 try:
     from modules.parser import parse_resume_file
     from modules.skills import extract_skills_from_text, parse_job_requirements
@@ -262,7 +267,7 @@ try:
 except ImportError:
     def create_zip_archive(): pass
 
-# Page Configuration & Theme
+# Page Configuration
 st.set_page_config(
     page_title="AI Resume Screening System",
     page_icon="🤖",
@@ -270,21 +275,245 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ----------------------------------------------------
+# 3. DIRECT INLINED DESIGN SYSTEM (100% RELIABLE STYLING)
+# ----------------------------------------------------
+INLINED_CSS = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Base Canvas */
+.stApp {
+    background-color: #0F172A !important;
+    color: #F8FAFC !important;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #1E293B !important;
+    border-right: 1px solid #334155 !important;
+}
+
+[data-testid="stSidebar"] *, 
+[data-testid="stSidebar"] p, 
+[data-testid="stSidebar"] span, 
+[data-testid="stSidebar"] label, 
+[data-testid="stSidebar"] div {
+    color: #F8FAFC !important;
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%) !important;
+    border: 1px solid #6366F1 !important;
+    border-radius: 20px !important;
+    padding: 32px 38px !important;
+    margin-bottom: 28px !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4) !important;
+}
+
+.hero-title {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 2.4rem !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important;
+    margin-bottom: 8px !important;
+}
+
+.hero-subtitle {
+    font-size: 1.05rem !important;
+    color: #C7D2FE !important;
+    line-height: 1.6 !important;
+}
+
+/* Badges */
+.badge-pill {
+    display: inline-flex !important;
+    padding: 6px 14px !important;
+    border-radius: 9999px !important;
+    font-size: 0.75rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.05em !important;
+    margin-right: 8px !important;
+    margin-bottom: 12px !important;
+}
+
+.badge-primary {
+    background: #3730A3 !important;
+    color: #E0E7FF !important;
+    border: 1px solid #6366F1 !important;
+}
+
+.badge-success {
+    background: #064E3B !important;
+    color: #A7F3D0 !important;
+    border: 1px solid #10B981 !important;
+}
+
+.badge-warning {
+    background: #78350F !important;
+    color: #FDE68A !important;
+    border: 1px solid #F59E0B !important;
+}
+
+/* Glass Cards */
+.glass-card {
+    background: #1E293B !important;
+    border: 1px solid #334155 !important;
+    border-radius: 20px !important;
+    padding: 28px !important;
+    margin-bottom: 24px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Metric Cards */
+.metric-box-inner {
+    border-radius: 18px !important;
+    padding: 22px 18px !important;
+    text-align: center !important;
+    background: #1E293B !important;
+    border: 1px solid #334155 !important;
+}
+
+.metric-card-1 { border-color: #38BDF8 !important; }
+.metric-card-1 .metric-val { color: #38BDF8 !important; }
+
+.metric-card-2 { border-color: #34D399 !important; }
+.metric-card-2 .metric-val { color: #34D399 !important; }
+
+.metric-card-3 { border-color: #C084FC !important; }
+.metric-card-3 .metric-val { color: #C084FC !important; }
+
+.metric-card-4 { border-color: #FBBF24 !important; }
+.metric-card-4 .metric-val { color: #FBBF24 !important; }
+
+.metric-val {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 2.3rem !important;
+    font-weight: 800 !important;
+}
+
+.metric-lbl {
+    font-size: 0.8rem !important;
+    color: #94A3B8 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    margin-top: 6px !important;
+}
+
+/* Skill Badges */
+.skill-tag {
+    display: inline-block !important;
+    border-radius: 10px !important;
+    padding: 5px 12px !important;
+    font-size: 0.83rem !important;
+    margin: 4px !important;
+    font-weight: 600 !important;
+}
+
+.skill-matched {
+    background: rgba(16, 185, 129, 0.2) !important;
+    color: #6EE7B7 !important;
+    border: 1px solid #10B981 !important;
+}
+
+.skill-missing {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #FCA5A5 !important;
+    border: 1px solid #EF4444 !important;
+}
+
+/* Tabs Styling - Curved Pill Bar & Clear High-Contrast Text */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px !important;
+    background: #1E293B !important;
+    padding: 8px !important;
+    border-radius: 9999px !important;
+    border: 1px solid #334155 !important;
+    margin-bottom: 24px !important;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 42px !important;
+    border-radius: 9999px !important;
+    color: #CBD5E1 !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    padding: 0 22px !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.stTabs [data-baseweb="tab"] span,
+.stTabs [data-baseweb="tab"] div,
+.stTabs [data-baseweb="tab"] p {
+    color: #CBD5E1 !important;
+    font-weight: 700 !important;
+}
+
+.stTabs [aria-selected="true"] {
+    background: #4338CA !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 4px 15px rgba(67, 56, 202, 0.5) !important;
+}
+
+.stTabs [aria-selected="true"] span,
+.stTabs [aria-selected="true"] div,
+.stTabs [aria-selected="true"] p {
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+}
+
+.stTabs [data-baseweb="tab-highlight-title"] { display: none !important; }
+.stTabs [data-baseweb="tab-border-line"] { display: none !important; }
+
+/* Form Controls & Inputs */
+div[data-baseweb="select"] > div, 
+.stTextInput > div > div > input, 
+.stTextArea > div > div > textarea {
+    background-color: #0F172A !important;
+    color: #F8FAFC !important;
+    border: 1px solid #334155 !important;
+    border-radius: 12px !important;
+}
+
+/* Buttons */
+.stButton > button {
+    background: #4338CA !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    border: none !important;
+    padding: 10px 24px !important;
+    box-shadow: 0 4px 14px rgba(67, 56, 202, 0.4) !important;
+}
+
+.stButton > button:hover {
+    background: #3730A3 !important;
+    color: #FFFFFF !important;
+}
+
+/* Dataframe */
+.stDataFrame {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    border: 1px solid #334155 !important;
+}
+</style>
+"""
+
+st.markdown(INLINED_CSS, unsafe_allow_html=True)
+
 # Helper to find file across multiple potential folder layouts
 def resolve_path(*relative_paths):
     for p in relative_paths:
         if os.path.exists(p):
             return p
     return relative_paths[0]
-
-# Load Custom CSS
-def load_css():
-    css_path = resolve_path("assets/style.css", "style.css", "style")
-    if os.path.exists(css_path):
-        with open(css_path, "r", encoding="utf-8") as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-load_css()
 
 # Ensure ZIP archive exists
 if not os.path.exists("ai_resume_screening_system.zip"):
@@ -924,3 +1153,5 @@ with tab6:
                 </ul>
             </div>
         """, unsafe_allow_html=True)
+,path:app.py}
+,path:app.py}
