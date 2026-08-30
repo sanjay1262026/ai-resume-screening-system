@@ -270,213 +270,263 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 3. DIRECT OPTION B INLINED DESIGN SYSTEM (OPTION B LIGHT SAAS MODE)
-INLINED_CSS = """
+# 3. TAILADMIN PREMIUM THEME CSS
+TAILADMIN_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 html, body, [class*="css"] {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    letter-spacing: -0.01em;
 }
 
-/* Off-White Clean Canvas (Option B Theme) */
 .stApp {
-    background-color: #F8FAFC !important;
-    color: #0F172A !important;
+    background: linear-gradient(135deg, #F5F7FA 0%, #E8EEF7 100%) !important;
+    color: #1F2937 !important;
 }
 
-/* Deep Navy Sidebar */
 [data-testid="stSidebar"] {
-    background-color: #0F172A !important;
-    border-right: 1px solid #1E293B !important;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFB 100%) !important;
+    border-right: 1px solid #E5E7EB !important;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04) !important;
 }
 
-[data-testid="stSidebar"] *, 
-[data-testid="stSidebar"] p, 
-[data-testid="stSidebar"] span, 
-[data-testid="stSidebar"] label, 
-[data-testid="stSidebar"] div,
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-    color: #F8FAFC !important;
+[data-testid="stSidebar"] * {
+    color: #374151 !important;
 }
 
-/* Hero Header Banner */
+[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+    color: #111827 !important;
+    font-weight: 700 !important;
+}
+
 .hero-banner {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%) !important;
-    border: 1px solid #334155 !important;
-    border-radius: 20px !important;
-    padding: 34px 40px !important;
-    margin-bottom: 28px !important;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12) !important;
+    background: linear-gradient(135deg, #667EEA 0%, #764BA2 50%, #F093FB 100%) !important;
+    border: none !important;
+    border-radius: 16px !important;
+    padding: 40px 45px !important;
+    margin-bottom: 32px !important;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2) !important;
+    position: relative;
+    overflow: hidden;
 }
 
 .hero-title {
-    font-family: 'Outfit', sans-serif !important;
-    font-size: 2.5rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 2.8rem !important;
     font-weight: 800 !important;
     color: #FFFFFF !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 12px !important;
+    position: relative;
+    z-index: 2;
+    letter-spacing: -0.02em;
 }
 
 .hero-subtitle {
-    font-size: 1.05rem !important;
-    color: #94A3B8 !important;
-    line-height: 1.6 !important;
+    font-size: 1.1rem !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    line-height: 1.8 !important;
+    position: relative;
+    z-index: 2;
+    font-weight: 400;
 }
 
-/* Badges */
 .badge-pill {
     display: inline-flex !important;
-    padding: 5px 14px !important;
-    border-radius: 9999px !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
     font-size: 0.75rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.05em !important;
-    margin-right: 8px !important;
-    margin-bottom: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    margin-right: 10px !important;
+    margin-bottom: 14px !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .badge-primary {
-    background: rgba(37, 99, 235, 0.2) !important;
-    color: #60A5FA !important;
-    border: 1px solid rgba(96, 165, 250, 0.3) !important;
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: #667EEA !important;
+    border: 1px solid rgba(102, 126, 234, 0.3) !important;
 }
 
 .badge-success {
-    background: rgba(16, 185, 129, 0.2) !important;
-    color: #34D399 !important;
-    border: 1px solid rgba(52, 211, 153, 0.3) !important;
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #10B981 !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
 }
 
 .badge-warning {
-    background: rgba(245, 158, 11, 0.2) !important;
-    color: #FBBF24 !important;
-    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #F59E0B !important;
+    border: 1px solid rgba(245, 158, 11, 0.3) !important;
 }
 
-/* Clean White Cards */
 .glass-card {
     background: #FFFFFF !important;
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 20px !important;
+    border: 1px solid #E5E7EB !important;
+    border-radius: 14px !important;
     padding: 28px !important;
     margin-bottom: 24px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.glass-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+    border-color: #D1D5DB !important;
 }
 
 .glass-card *, .glass-card h1, .glass-card h2, .glass-card h3, .glass-card p, .glass-card label, .glass-card span {
-    color: #0F172A !important;
+    color: #1F2937 !important;
 }
 
-/* Option B Pastel Metric Cards */
 .metric-box-inner {
-    border-radius: 18px !important;
-    padding: 22px 18px !important;
+    border-radius: 14px !important;
+    padding: 24px 20px !important;
     text-align: center !important;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid transparent !important;
+    transition: all 0.3s ease !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-box-inner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
 }
 
 .metric-card-1 {
-    background: #EFF6FF !important;
-    border: 1px solid #BFDBFE !important;
+    background: linear-gradient(135deg, #F0F4FF 0%, #E8EEFF 100%) !important;
+    border: 1px solid #E0E7FF !important;
+    --gradient-start: #667EEA;
+    --gradient-end: #764BA2;
 }
-.metric-card-1 .metric-val { color: #1E40AF !important; }
+.metric-card-1 .metric-val { color: #667EEA !important; }
+.metric-card-1 .metric-lbl { color: #667EEA !important; }
 
 .metric-card-2 {
-    background: #ECFDF5 !important;
-    border: 1px solid #A7F3D0 !important;
+    background: linear-gradient(135deg, #F0FDFB 0%, #E8FEFA 100%) !important;
+    border: 1px solid #CCFBF1 !important;
+    --gradient-start: #14B8A6;
+    --gradient-end: #06B6D4;
 }
-.metric-card-2 .metric-val { color: #065F46 !important; }
+.metric-card-2 .metric-val { color: #14B8A6 !important; }
+.metric-card-2 .metric-lbl { color: #14B8A6 !important; }
 
 .metric-card-3 {
-    background: #F5F3FF !important;
-    border: 1px solid #DDD6FE !important;
+    background: linear-gradient(135deg, #F5F3FF 0%, #FAF5FF 100%) !important;
+    border: 1px solid #E9D5FF !important;
+    --gradient-start: #A855F7;
+    --gradient-end: #D946EF;
 }
-.metric-card-3 .metric-val { color: #5B21B6 !important; }
+.metric-card-3 .metric-val { color: #A855F7 !important; }
+.metric-card-3 .metric-lbl { color: #A855F7 !important; }
 
 .metric-card-4 {
-    background: #FFFBEB !important;
-    border: 1px solid #FDE68A !important;
+    background: linear-gradient(135deg, #FFF7ED 0%, #FFEAA7 100%) !important;
+    border: 1px solid #FDBA74 !important;
+    --gradient-start: #FB923C;
+    --gradient-end: #F59E0B;
 }
-.metric-card-4 .metric-val { color: #92400E !important; }
+.metric-card-4 .metric-val { color: #FB923C !important; }
+.metric-card-4 .metric-lbl { color: #FB923C !important; }
 
 .metric-val {
-    font-family: 'Outfit', sans-serif !important;
-    font-size: 2.3rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 2.5rem !important;
     font-weight: 800 !important;
     line-height: 1.1 !important;
+    letter-spacing: -0.02em;
 }
 
 .metric-lbl {
-    font-size: 0.8rem !important;
-    color: #64748B !important;
-    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
-    margin-top: 6px !important;
+    letter-spacing: 0.08em !important;
+    margin-top: 8px !important;
+    opacity: 0.85 !important;
 }
 
-/* Option B Soft Skill Badges */
 .skill-tag {
-    display: inline-block !important;
-    border-radius: 10px !important;
-    padding: 5px 13px !important;
-    font-size: 0.83rem !important;
-    margin: 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    border-radius: 12px !important;
+    padding: 6px 14px !important;
+    font-size: 0.85rem !important;
+    margin: 5px !important;
     font-weight: 600 !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s ease !important;
 }
 
 .skill-matched {
-    background: #DCFCE7 !important;
-    color: #166534 !important;
-    border: 1px solid #86EFAC !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)) !important;
+    color: #059669 !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.skill-matched:hover {
+    background: rgba(16, 185, 129, 0.2) !important;
 }
 
 .skill-missing {
-    background: #FFE4E6 !important;
-    color: #991B1B !important;
-    border: 1px solid #FECDD3 !important;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)) !important;
+    color: #DC2626 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
 }
 
-/* Floating Curved Pill Tab Bar (Option B Style) */
+.skill-missing:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+}
+
 .stTabs [data-baseweb="tab-list"] {
     gap: 8px !important;
-    background: #E2E8F0 !important;
+    background: #F3F4F6 !important;
     padding: 6px !important;
-    border-radius: 9999px !important;
-    border: 1px solid #CBD5E1 !important;
-    margin-bottom: 24px !important;
+    border-radius: 12px !important;
+    border: 1px solid #E5E7EB !important;
+    margin-bottom: 28px !important;
 }
 
 .stTabs [data-baseweb="tab"] {
-    height: 42px !important;
-    border-radius: 9999px !important;
-    color: #475569 !important;
+    height: 44px !important;
+    border-radius: 10px !important;
+    color: #6B7280 !important;
     font-weight: 600 !important;
-    font-size: 0.92rem !important;
-    padding: 0 22px !important;
+    font-size: 0.95rem !important;
+    padding: 0 20px !important;
     border: none !important;
     background: transparent !important;
+    transition: all 0.3s ease !important;
 }
 
-.stTabs [data-baseweb="tab"] span,
-.stTabs [data-baseweb="tab"] div,
-.stTabs [data-baseweb="tab"] p {
-    color: #475569 !important;
+.stTabs [data-baseweb="tab"] span, .stTabs [data-baseweb="tab"] div, .stTabs [data-baseweb="tab"] p {
+    color: #6B7280 !important;
     font-weight: 600 !important;
 }
 
 .stTabs [aria-selected="true"] {
-    background: #2563EB !important;
-    border-radius: 9999px !important;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+    background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3) !important;
 }
 
-.stTabs [aria-selected="true"] span,
-.stTabs [aria-selected="true"] div,
-.stTabs [aria-selected="true"] p {
+.stTabs [aria-selected="true"] span, .stTabs [aria-selected="true"] div, .stTabs [aria-selected="true"] p {
     color: #FFFFFF !important;
     font-weight: 700 !important;
 }
@@ -484,66 +534,129 @@ html, body, [class*="css"] {
 .stTabs [data-baseweb="tab-highlight-title"] { display: none !important; }
 .stTabs [data-baseweb="tab-border-line"] { display: none !important; }
 
-/* Input Controls in Main Canvas */
-.stApp div[data-baseweb="select"] > div, 
-.stApp .stTextInput > div > div > input, 
-.stApp .stTextArea > div > div > textarea {
+.stApp div[data-baseweb="select"] > div, .stApp .stTextInput > div > div > input, .stApp .stTextArea > div > div > textarea, .stApp .stNumberInput > div > div > input {
     background-color: #FFFFFF !important;
-    color: #0F172A !important;
-    border: 1px solid #CBD5E1 !important;
-    border-radius: 12px !important;
+    color: #111827 !important;
+    border: 1.5px solid #E5E7EB !important;
+    border-radius: 10px !important;
+    font-size: 0.95rem !important;
+    font-family: 'Sora', sans-serif !important;
+    transition: all 0.2s ease !important;
 }
 
-/* Sidebar Inputs */
-[data-testid="stSidebar"] div[data-baseweb="select"] > div, 
-[data-testid="stSidebar"] .stTextInput > div > div > input {
-    background-color: #1E293B !important;
-    color: #F8FAFC !important;
-    border: 1px solid #334155 !important;
-    border-radius: 12px !important;
+.stApp div[data-baseweb="select"] > div:hover, .stApp .stTextInput > div > div > input:hover, .stApp .stTextArea > div > div > textarea:hover {
+    border-color: #D1D5DB !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Royal Blue Buttons */
+.stApp div[data-baseweb="select"] > div:focus-within, .stApp .stTextInput > div > div > input:focus-within, .stApp .stTextArea > div > div > textarea:focus-within {
+    border-color: #667EEA !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+[data-testid="stSidebar"] div[data-baseweb="select"] > div, [data-testid="stSidebar"] .stTextInput > div > div > input, [data-testid="stSidebar"] .stNumberInput > div > div > input {
+    background-color: #F9FAFB !important;
+    color: #111827 !important;
+    border: 1.5px solid #E5E7EB !important;
+    border-radius: 10px !important;
+}
+
 .stButton > button {
-    background: #2563EB !important;
+    background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%) !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     border: none !important;
-    padding: 10px 24px !important;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+    padding: 12px 28px !important;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3) !important;
+    font-size: 0.95rem !important;
+    font-family: 'Sora', sans-serif !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    letter-spacing: -0.01em;
 }
 
 .stButton > button:hover {
-    background: #1D4ED8 !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4) !important;
+    background: linear-gradient(135deg, #5568D3 0%, #6B3D8F 100%) !important;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4) !important;
+    transform: translateY(-2px) !important;
 }
 
-/* Dataframe */
+.stButton > button:active {
+    transform: translateY(0) !important;
+}
+
 .stDataFrame {
     border-radius: 14px !important;
     overflow: hidden !important;
-    border: 1px solid #E2E8F0 !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
 }
+
+.stDataFrame th {
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%) !important;
+    color: #111827 !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #D1D5DB !important;
+}
+
+.stDataFrame td {
+    border-bottom: 1px solid #E5E7EB !important;
+}
+
+.stDataFrame tr:hover {
+    background: linear-gradient(90deg, #F9FAFB 0%, transparent 100%) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #111827 !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+}
+
+h1 { font-size: 2.2rem !important; }
+h2 { font-size: 1.8rem !important; }
+h3 { font-size: 1.4rem !important; }
+
+p, span, label, div {
+    color: #374151 !important;
+}
+
+::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: #F3F4F6 !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #667EEA 0%, #764BA2 100%) !important;
+    border-radius: 10px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #5568D3 0%, #6B3D8F 100%) !important;
+}
+
+.stMarkdown hr {
+    border-color: #E5E7EB !important;
+}
+
 </style>
 """
 
-st.markdown(INLINED_CSS, unsafe_allow_html=True)
+st.markdown(TAILADMIN_CSS, unsafe_allow_html=True)
 
-# Helper to find file across multiple potential folder layouts
 def resolve_path(*relative_paths):
     for p in relative_paths:
         if os.path.exists(p):
             return p
     return relative_paths[0]
 
-# Ensure ZIP archive exists
 if not os.path.exists("ai_resume_screening_system.zip"):
     create_zip_archive()
 
-# Session State & Fast Cached Loader Helpers
 @st.cache_data(show_spinner=False)
 def cached_parse_resume(filepath):
     return parse_resume_file(filepath)
@@ -581,7 +694,6 @@ def load_sample_data(jd_filename="AI_ML_Engineer_JD.txt"):
         results.sort(key=lambda x: x["overall_score"], reverse=True)
         st.session_state.eval_results = results
 
-# AUTO RESTORE: Fast DB restore if user is logged in
 if st.session_state.current_user and not st.session_state.eval_results:
     latest_s_info, latest_cands = db_get_latest_user_screening(st.session_state.current_user["id"])
     if latest_s_info and latest_cands:
@@ -589,16 +701,13 @@ if st.session_state.current_user and not st.session_state.eval_results:
         st.session_state.jd_text = latest_s_info["jd_text"]
         st.session_state.eval_results = latest_cands
 
-# Sidebar Authentication & Controls
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/000000/brain--v1.png", width=60)
-    st.title("Control Panel")
+    st.markdown('<div style="text-align: center; padding: 10px;"><span style="font-size: 2rem;">🎯</span><h2 style="margin-top: 10px;">TailAdmin</h2></div>', unsafe_allow_html=True)
     st.markdown("---")
 
-    # USER AUTHENTICATION SECTION
     if not st.session_state.current_user:
-        st.subheader("🔑 Account Login & Storage")
-        st.caption("Default Admin: `admin` / `admin123`")
+        st.subheader("🔑 Account Login")
+        st.caption("Default: `admin` / `admin123`")
         auth_mode = st.radio("Select Action:", ["Login", "Register", "Forgot Password?"], horizontal=True)
 
         if auth_mode == "Login":
@@ -613,7 +722,7 @@ with st.sidebar:
                         st.session_state.jd_title = latest_s_info["jd_title"]
                         st.session_state.jd_text = latest_s_info["jd_text"]
                         st.session_state.eval_results = latest_cands
-                        st.success(f"Welcome back {user['full_name']}! Auto-restored your saved screening.")
+                        st.success(f"Welcome back {user['full_name']}!")
                     else:
                         st.success(f"Welcome back, {user['full_name']}!")
                     st.rerun()
@@ -632,7 +741,7 @@ with st.sidebar:
                         st.error(msg)
                 else:
                     st.warning("Please fill in all registration fields.")
-        else: # Forgot Password
+        else:
             reset_user = st.text_input("Account Username:", key="reset_user")
             reset_new_pass = st.text_input("New Password:", type="password", key="reset_new_pass")
             if st.button("Reset Password", use_container_width=True):
@@ -646,7 +755,8 @@ with st.sidebar:
                     st.warning("Please enter username and new password.")
     else:
         user = st.session_state.current_user
-        st.markdown(f"👤 **Logged in as:** `{user['full_name']}` (`@{user['username']}`)")
+        st.markdown(f"👤 **{user['full_name']}**")
+        st.caption(f"@{user['username']}")
         
         if st.button("Logout", use_container_width=True):
             st.session_state.current_user = None
@@ -654,47 +764,46 @@ with st.sidebar:
             st.rerun()
 
         st.markdown("---")
-        st.subheader("💾 Saved Screening Sessions")
+        st.subheader("💾 Saved Sessions")
         
         if st.session_state.eval_results and st.session_state.jd_text:
-            if st.button("Save Current Results to DB", use_container_width=True):
+            if st.button("Save Current Results", use_container_width=True):
                 s_id = db_save_screening_session(
                     user["id"],
                     st.session_state.jd_title,
                     st.session_state.jd_text,
                     st.session_state.eval_results
                 )
-                st.success(f"Screening session #{s_id} saved to database!")
+                st.success(f"Session #{s_id} saved!")
 
         user_sessions = db_get_user_screenings(user["id"])
         if user_sessions:
-            session_options = {f"#{s['id']} - {s['jd_title']} ({s['created_at'][:10]})": s['id'] for s in user_sessions}
-            selected_s = st.selectbox("Load Saved Screening:", list(session_options.keys()))
-            if st.button("Load Selected Session", use_container_width=True):
+            session_options = {f"#{s['id']} - {s['jd_title'][:20]}" : s['id'] for s in user_sessions}
+            selected_s = st.selectbox("Load Session:", list(session_options.keys()))
+            if st.button("Load Selected", use_container_width=True):
                 s_id = session_options[selected_s]
                 s_info, s_cands = db_load_screening_details(s_id)
                 if s_info:
                     st.session_state.jd_title = s_info["jd_title"]
                     st.session_state.jd_text = s_info["jd_text"]
                     st.session_state.eval_results = s_cands
-                    st.success("Loaded saved screening session!")
+                    st.success("Loaded!")
                     st.rerun()
 
     st.markdown("---")
-    st.subheader("⚡ Quick Demo Loader")
-    if st.button("Load Sample Showcase Data", use_container_width=True):
+    st.subheader("⚡ Demo Data")
+    if st.button("Load Sample Data", use_container_width=True, type="primary"):
         load_sample_data()
-        st.success("Loaded sample resumes & JD!")
+        st.success("Loaded!")
         st.rerun()
 
     st.markdown("---")
-    st.subheader("Scoring Weight Matrix")
-    st.caption("Adjust algorithm priorities dynamically:")
-
-    w_skill = st.slider("Skill Match Weight", 0.0, 1.0, 0.40, 0.05)
-    w_semantic = st.slider("Semantic Similarity Weight", 0.0, 1.0, 0.35, 0.05)
-    w_exp = st.slider("Experience Weight", 0.0, 1.0, 0.15, 0.05)
-    w_edu = st.slider("Education Weight", 0.0, 1.0, 0.10, 0.05)
+    st.subheader("⚙️ Scoring Weights")
+    
+    w_skill = st.slider("Skill Match", 0.0, 1.0, 0.40, 0.05)
+    w_semantic = st.slider("Semantic Similarity", 0.0, 1.0, 0.35, 0.05)
+    w_exp = st.slider("Experience", 0.0, 1.0, 0.15, 0.05)
+    w_edu = st.slider("Education", 0.0, 1.0, 0.10, 0.05)
 
     total_w = w_skill + w_semantic + w_exp + w_edu
     if total_w > 0:
@@ -708,39 +817,34 @@ with st.sidebar:
         weights = {'skill': 0.40, 'semantic': 0.35, 'experience': 0.15, 'education': 0.10}
 
     st.markdown("---")
-    st.subheader("Leaderboard Filters")
-    min_score_filter = st.slider("Min Overall Fit (%)", 0, 100, 0, 5)
+    st.subheader("🎯 Filters")
+    min_score_filter = st.slider("Min Fit Score (%)", 0, 100, 0, 5)
     status_filter = st.multiselect(
-        "Filter by Match Status",
+        "Match Status",
         ["Top Match", "Potential Fit", "Low Match"],
         default=["Top Match", "Potential Fit", "Low Match"]
     )
 
-# Main App Layout & Header
 render_hero_banner()
 
-# Navigation Tabs
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "Ingestion & Setup",
-    "Screening Leaderboard",
-    "Candidate Comparison & AI Feedback",
-    "Skill Gap Analytics",
-    "Export & Reports",
-    "AI Engine & Math"
+    "📝 Ingestion",
+    "📊 Leaderboard",
+    "⚔️ Comparison",
+    "📈 Analytics",
+    "📥 Reports",
+    "🔬 AI Engine"
 ])
 
-# ==========================================
-# TAB 1: Ingestion & Job Description Setup
-# ==========================================
 with tab1:
     col_jd, col_resumes = st.columns([1, 1])
 
     with col_jd:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.subheader("1. Job Description (JD)")
+        st.subheader("Job Description")
         
         preset_jd = st.selectbox(
-            "Select Pre-built Job Template:",
+            "Template:",
             ["Custom Input", "Senior AI / ML Engineer", "Full Stack Web Developer", "Data Analyst"]
         )
 
@@ -764,50 +868,50 @@ with tab1:
                     st.session_state.jd_title = "Data Analyst Specialist"
 
         jd_input = st.text_area(
-            "Target Job Description Text:",
+            "Job Description:",
             value=st.session_state.jd_text,
-            height=300,
-            placeholder="Paste complete job description requirements here..."
+            height=250,
+            placeholder="Paste job description here..."
         )
         st.session_state.jd_text = jd_input
 
         if jd_input.strip():
             reqs = parse_job_requirements(jd_input)
             st.markdown("---")
-            st.markdown("#### Extracted Job Criteria:")
-            st.markdown(f"**Required Experience:** `{reqs['min_experience_years']}+ Years` | **Minimum Degree:** `{reqs['min_education']}`")
-            st.markdown("**Target Skills Identified:**")
+            st.markdown("#### Job Criteria")
+            st.markdown(f"**Experience:** `{reqs['min_experience_years']}+ Years` | **Education:** `{reqs['min_education']}`")
+            st.markdown("**Target Skills:**")
             st.markdown(render_skill_tags(reqs["required_skills"], matched=True), unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_resumes:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.subheader("2. Candidate Resumes")
+        st.subheader("Candidate Resumes")
         
         uploaded_files = st.file_uploader(
-            "Upload Candidate Resumes (PDF, DOCX, TXT):",
+            "Upload (PDF, DOCX, TXT):",
             type=["pdf", "docx", "doc", "txt"],
             accept_multiple_files=True
         )
 
         col_opt1, col_opt2 = st.columns([1.2, 1])
         with col_opt1:
-            use_sample_resumes = st.checkbox("Include Pre-loaded Sample Resumes", value=False)
+            use_sample_resumes = st.checkbox("Use Sample Resumes", value=False)
         with col_opt2:
-            if st.button("🗑️ Clear Existing Candidates", use_container_width=True):
+            if st.button("🗑️ Clear", use_container_width=True):
                 st.session_state.eval_results = []
-                st.success("Cleared existing candidate history!")
+                st.success("Cleared!")
                 st.rerun()
 
         st.markdown("---")
-        run_screening = st.button("Run AI Screening & Candidate Ranking Engine", use_container_width=True, type="primary")
+        run_screening = st.button("Run AI Screening", use_container_width=True, type="primary")
 
         if run_screening:
             if not st.session_state.jd_text.strip():
-                st.error("Please provide or select a Job Description first!")
+                st.error("Please provide a Job Description first!")
             else:
-                with st.spinner("⚡ AI Screening Resumes & Vectorizing Qualifications..."):
+                with st.spinner("⚡ Processing..."):
                     candidates_list = []
                     if uploaded_files:
                         for uf in uploaded_files:
@@ -839,12 +943,11 @@ with tab1:
                             merged_results
                         )
 
-                    st.success(f"Successfully evaluated and accumulated {len(merged_results)} candidate resumes!")
+                    st.success(f"Evaluated {len(merged_results)} candidates!")
                     st.rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-# Recalculate weights if adjusted without re-uploading
 if st.session_state.eval_results and st.session_state.jd_text:
     updated_results = []
     for res in st.session_state.eval_results:
@@ -871,12 +974,9 @@ filtered_results = [
     if r["overall_score"] >= min_score_filter and clean_status(r["status"]) in [clean_status(sf) for sf in status_filter]
 ]
 
-# ==========================================
-# TAB 2: Screening Dashboard & Leaderboard
-# ==========================================
 with tab2:
     if not filtered_results:
-        st.warning("No candidate resumes match the active filters or state.")
+        st.warning("No candidates match filters.")
     else:
         total_cands = len(st.session_state.eval_results)
         top_matches = sum(1 for r in st.session_state.eval_results if r["overall_score"] >= 75)
@@ -889,13 +989,13 @@ with tab2:
 
         col_head1, col_head2 = st.columns([3, 1])
         with col_head1:
-            st.subheader("Candidate Screening Leaderboard")
+            st.subheader("Candidate Leaderboard")
         with col_head2:
-            if st.button("🗑️ Clear Candidates", use_container_width=True):
+            if st.button("🗑️ Clear All", use_container_width=True):
                 st.session_state.eval_results = []
                 st.rerun()
 
-        search_query = st.text_input("Search Candidates by Name, Email, or Skill:", placeholder="Type 'Python', 'Alex', or 'PyTorch'...")
+        search_query = st.text_input("Search by Name, Email, or Skill:", placeholder="Type to search...")
 
         display_list = filtered_results
         if search_query.strip():
@@ -909,28 +1009,24 @@ with tab2:
         for rank, res in enumerate(display_list, 1):
             table_rows.append({
                 "Rank": f"#{rank}",
-                "Candidate Name": res["candidate_name"],
-                "Overall Fit": f"{round(float(res['overall_score']), 1)}%",
-                "Skill Score": f"{round(float(res['skill_score']), 1)}%",
-                "Semantic Sim": f"{round(float(res['semantic_score']), 1)}%",
-                "Experience": f"{res['candidate_exp_years']} Yrs",
-                "Education": res["candidate_edu"],
+                "Name": res["candidate_name"],
+                "Overall": f"{round(float(res['overall_score']), 1)}%",
+                "Skill": f"{round(float(res['skill_score']), 1)}%",
+                "Semantic": f"{round(float(res['semantic_score']), 1)}%",
+                "Exp": f"{res['candidate_exp_years']} Y",
+                "Edu": res["candidate_edu"],
                 "Status": clean_status(res["status"]),
-                "Matched Skills Count": len(res["matched_skills"])
+                "Skills": len(res["matched_skills"])
             })
 
         df_table = pd.DataFrame(table_rows)
-        st.dataframe(
-            df_table,
-            use_container_width=True,
-            hide_index=True
-        )
+        st.dataframe(df_table, use_container_width=True, hide_index=True)
 
         st.markdown("---")
-        st.subheader("Candidate Profiles & Skill Matrices")
+        st.subheader("Candidate Profiles")
 
         for rank, res in enumerate(display_list, 1):
-            with st.expander(f"#{rank} | {res['candidate_name']} ({clean_status(res['status'])}) — Overall Fit: {round(float(res['overall_score']), 1)}%"):
+            with st.expander(f"#{rank} | {res['candidate_name']} ({clean_status(res['status'])}) — {round(float(res['overall_score']), 1)}%"):
                 col_info, col_chart = st.columns([1.2, 1])
 
                 with col_info:
@@ -939,34 +1035,31 @@ with tab2:
                     st.markdown(f"**Experience:** `{res['candidate_exp_years']} Years` | **Education:** `{res['candidate_edu']}`")
                     st.markdown("---")
 
-                    st.markdown("**Matched Required Skills:**")
+                    st.markdown("**Matched Skills:**")
                     st.markdown(render_skill_tags(res["matched_skills"], matched=True), unsafe_allow_html=True)
 
-                    st.markdown("**Missing Required Skills:**")
+                    st.markdown("**Missing Skills:**")
                     st.markdown(render_skill_tags(res["missing_skills"], matched=False), unsafe_allow_html=True)
 
                     if res["extra_skills"]:
-                        st.markdown("**Additional Skills Mentioned:**")
+                        st.markdown("**Additional Skills:**")
                         st.markdown(render_skill_tags(res["extra_skills"][:8], matched=True), unsafe_allow_html=True)
 
                 with col_chart:
                     st.plotly_chart(plot_candidate_radar(res), use_container_width=True)
 
-# ==========================================
-# TAB 3: Candidate Comparison & AI Feedback
-# ==========================================
 with tab3:
     if len(st.session_state.eval_results) < 2:
-        st.info("At least 2 evaluated candidates are required for side-by-side comparison.")
+        st.info("At least 2 candidates needed for comparison.")
     else:
-        st.subheader("Side-by-Side Candidate Head-to-Head Comparison")
+        st.subheader("Head-to-Head Comparison")
         cand_names = [r["candidate_name"] for r in st.session_state.eval_results]
         
         col_select1, col_select2 = st.columns(2)
         with col_select1:
-            c1_name = st.selectbox("Select Candidate A:", cand_names, index=0)
+            c1_name = st.selectbox("Candidate A:", cand_names, index=0)
         with col_select2:
-            c2_name = st.selectbox("Select Candidate B:", cand_names, index=min(1, len(cand_names)-1))
+            c2_name = st.selectbox("Candidate B:", cand_names, index=min(1, len(cand_names)-1))
 
         res1 = next(r for r in st.session_state.eval_results if r["candidate_name"] == c1_name)
         res2 = next(r for r in st.session_state.eval_results if r["candidate_name"] == c2_name)
@@ -974,76 +1067,73 @@ with tab3:
         col_rad, col_stats = st.columns([1, 1.2])
 
         with col_rad:
-            st.markdown("#### Skill Radar Overlay")
+            st.markdown("#### Skill Radar")
             st.plotly_chart(plot_comparison_radar(res1, res2), use_container_width=True)
 
         with col_stats:
-            st.markdown("#### Quantitative Breakdown")
+            st.markdown("#### Score Breakdown")
             comp_data = [
-                {"Metric": "Overall Fit Score", "Candidate A": f"{round(float(res1['overall_score']), 1)}%", "Candidate B": f"{round(float(res2['overall_score']), 1)}%"},
-                {"Metric": "Skill Match Score", "Candidate A": f"{round(float(res1['skill_score']), 1)}%", "Candidate B": f"{round(float(res2['skill_score']), 1)}%"},
-                {"Metric": "Semantic Similarity", "Candidate A": f"{round(float(res1['semantic_score']), 1)}%", "Candidate B": f"{round(float(res2['semantic_score']), 1)}%"},
-                {"Metric": "Experience Score", "Candidate A": f"{round(float(res1['experience_score']), 1)}%", "Candidate B": f"{round(float(res2['experience_score']), 1)}%"},
-                {"Metric": "Education Score", "Candidate A": f"{round(float(res1['education_score']), 1)}%", "Candidate B": f"{round(float(res2['education_score']), 1)}%"},
-                {"Metric": "Experience (Years)", "Candidate A": f"{res1['candidate_exp_years']} Yrs", "Candidate B": f"{res2['candidate_exp_years']} Yrs"}
+                {"Metric": "Overall Fit", "A": f"{round(float(res1['overall_score']), 1)}%", "B": f"{round(float(res2['overall_score']), 1)}%"},
+                {"Metric": "Skill Match", "A": f"{round(float(res1['skill_score']), 1)}%", "B": f"{round(float(res2['skill_score']), 1)}%"},
+                {"Metric": "Semantic Sim", "A": f"{round(float(res1['semantic_score']), 1)}%", "B": f"{round(float(res2['semantic_score']), 1)}%"},
+                {"Metric": "Experience", "A": f"{round(float(res1['experience_score']), 1)}%", "B": f"{round(float(res2['experience_score']), 1)}%"},
+                {"Metric": "Education", "A": f"{round(float(res1['education_score']), 1)}%", "B": f"{round(float(res2['education_score']), 1)}%"},
+                {"Metric": "Years", "A": f"{res1['candidate_exp_years']} Y", "B": f"{res2['candidate_exp_years']} Y"}
             ]
             st.dataframe(pd.DataFrame(comp_data), hide_index=True, use_container_width=True)
 
         st.markdown("---")
-        st.subheader("Automated AI Feedback & Technical Interview Generator")
+        st.subheader("AI Feedback")
         col_fb1, col_fb2 = st.columns(2)
 
         for col, res in zip([col_fb1, col_fb2], [res1, res2]):
             with col:
                 st.markdown(f'<div class="glass-card">', unsafe_allow_html=True)
                 fb = generate_candidate_feedback(res)
-                st.markdown(f"### {res['candidate_name']} ({clean_status(res['status'])})")
-                st.markdown(f"**AI Assessment:** {fb['summary']}")
+                st.markdown(f"### {res['candidate_name']}")
+                st.markdown(f"**Assessment:** {fb['summary']}")
 
-                st.markdown("#### Key Strengths")
+                st.markdown("#### Strengths")
                 for s in fb["strengths"]:
                     st.markdown(f"- {s}")
 
-                st.markdown("#### Skill & Qualification Gaps")
+                st.markdown("#### Gaps")
                 for w in fb["weaknesses"]:
                     st.markdown(f"- {w}")
 
-                st.markdown("#### Tailored Interview Questions")
+                st.markdown("#### Interview Questions")
                 for q in fb["interview_questions"]:
                     st.markdown(f"**{q}**")
 
                 st.markdown('</div>', unsafe_allow_html=True)
 
-# ==========================================
-# TAB 4: Skill Gap Analytics & Insights
-# ==========================================
 with tab4:
     if not st.session_state.eval_results:
-        st.warning("No evaluation data available.")
+        st.warning("No data available.")
     else:
-        st.subheader("Candidate Pool Skill Analytics")
+        st.subheader("Skill Analytics")
         col_a1, col_a2 = st.columns(2)
 
         with col_a1:
-            st.markdown("#### Overall Fit Score Distribution")
+            st.markdown("#### Score Distribution")
             scores = [r["overall_score"] for r in st.session_state.eval_results]
             fig_hist = px.histogram(
                 scores,
                 nbins=10,
-                labels={'value': 'Overall Fit Score (%)'},
-                title="Applicant Fit Score Distribution",
-                color_discrete_sequence=['#818CF8']
+                labels={'value': 'Score (%)'},
+                color_discrete_sequence=['#667EEA']
             )
             fig_hist.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(15,23,42,0.6)',
-                font=dict(color="#F1F5F9"),
-                showlegend=False
+                plot_bgcolor='rgba(245,247,250,0.5)',
+                font=dict(color="#374151"),
+                showlegend=False,
+                height=350
             )
             st.plotly_chart(fig_hist, use_container_width=True)
 
         with col_a2:
-            st.markdown("#### Top Missing Skills Across All Applicants")
+            st.markdown("#### Missing Skills")
             missing_counter = {}
             for r in st.session_state.eval_results:
                 for ms in r["missing_skills"]:
@@ -1057,59 +1147,31 @@ with tab4:
                     y='Skill',
                     orientation='h',
                     color='Count',
-                    color_continuous_scale='Reds',
-                    title="Most Common Skill Gaps"
+                    color_continuous_scale='Reds'
                 )
                 fig_miss.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(15,23,42,0.6)',
-                    font=dict(color="#F1F5F9")
+                    plot_bgcolor='rgba(245,247,250,0.5)',
+                    font=dict(color="#374151"),
+                    height=350
                 )
                 st.plotly_chart(fig_miss, use_container_width=True)
             else:
-                st.success("No missing required skills detected in applicant pool!")
+                st.success("No gaps!")
 
-        st.markdown("---")
-        st.markdown("#### Talent Pool Skill Frequency Matrix")
-        all_matched = []
-        for r in st.session_state.eval_results:
-            all_matched.extend(r["matched_skills"])
-
-        if all_matched:
-            freq_df = pd.Series(all_matched).value_counts().reset_index()
-            freq_df.columns = ["Skill", "Candidates Possessing Skill"]
-            fig_freq = px.bar(
-                freq_df.head(12),
-                x="Skill",
-                y="Candidates Possessing Skill",
-                color="Candidates Possessing Skill",
-                color_continuous_scale="Viridis",
-                title="Top Represented Skills in Pool"
-            )
-            fig_freq.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(15,23,42,0.6)',
-                font=dict(color="#F1F5F9")
-            )
-            st.plotly_chart(freq_df, use_container_width=True)
-
-# ==========================================
-# TAB 5: Export & Reports
-# ==========================================
 with tab5:
-    st.subheader("Export Candidate Screening Reports")
-    st.write("Generate official candidate screening reports for HR records or hiring committee reviews.")
+    st.subheader("Export Reports")
     col_exp1, col_exp2 = st.columns(2)
 
     with col_exp1:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("### Export CSV Data")
-        st.write("Download structured CSV file with candidate scores, contact info, and matched/missing skills.")
+        st.markdown("### CSV Export")
+        st.write("Download candidate data in CSV format.")
         csv_bytes = generate_csv_report(st.session_state.eval_results)
         st.download_button(
-            label="Download CSV Report",
+            label="Download CSV",
             data=csv_bytes,
-            file_name="candidate_screening_leaderboard.csv",
+            file_name="candidates.csv",
             mime="text/csv",
             use_container_width=True
         )
@@ -1117,37 +1179,25 @@ with tab5:
 
     with col_exp2:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("### Export PDF Report")
-        st.write("Generate a formatted executive summary PDF report with candidate rankings and detailed breakdowns.")
+        st.markdown("### PDF Export")
+        st.write("Download executive summary PDF.")
         pdf_bytes = generate_pdf_report(st.session_state.eval_results, st.session_state.jd_title)
         st.download_button(
-            label="Download PDF Summary Report",
+            label="Download PDF",
             data=pdf_bytes,
-            file_name="candidate_screening_executive_report.pdf",
+            file_name="report.pdf",
             mime="application/pdf",
             use_container_width=True
         )
         st.markdown('</div>', unsafe_allow_html=True)
 
-# ==========================================
-# TAB 6: AI Engine & Math Explainability
-# ==========================================
 with tab6:
-    st.subheader("System Architecture & Algorithm Mechanics")
+    st.subheader("Algorithm Mechanics")
 
     st.markdown("""
         <div class="glass-card">
-            <h3>1. Multi-Factor Scoring Formula</h3>
-            <p>The candidate evaluation model computes a weighted composite match index across four key pillars:</p>
-            <div style="background: rgba(15, 23, 42, 0.8); padding: 16px; border-radius: 12px; font-family: monospace; font-size: 1.05rem; color: #818CF8;">
-                Overall Fit Score = (0.40 × Skill Match) + (0.35 × Semantic Cosine Sim) + (0.15 × Exp Score) + (0.10 × Edu Score)
-            </div>
-            <ul>
-                <li><b>Skill Match Score (40%)</b>: Calculated as <code>(Count of Matched JD Skills / Total Required JD Skills) × 100</code>.</li>
-                <li><b>Semantic Similarity Score (35%)</b>: Uses N-Gram TF-IDF Vectorization to measure vocabulary and contextual overlap between Job Description and Resume body text.</li>
-                <li><b>Experience Score (15%)</b>: Compares extracted years of candidate work experience against the job description minimum required experience.</li>
-                <li><b>Education Score (10%)</b>: Evaluates qualification levels (B.Tech / B.S., M.Tech / M.S., Ph.D.).</li>
-            </ul>
+            <h3>Multi-Factor Scoring</h3>
+            <p>Overall Fit = (0.40 × Skill) + (0.35 × Semantic) + (0.15 × Exp) + (0.10 × Edu)</p>
         </div>
     """, unsafe_allow_html=True)
 
@@ -1156,25 +1206,15 @@ with tab6:
     with col_m1:
         st.markdown("""
             <div class="glass-card">
-                <h3>2. TF-IDF & Cosine Distance</h3>
-                <p>Term Frequency-Inverse Document Frequency converts unstructured resume text into a high-dimensional vector space:</p>
-                <p><b>TF-IDF Calculation:</b></p>
-                <code>TF(t, d) = f(t, d) / Total words in d</code><br/>
-                <code>IDF(t) = log(N / df(t))</code><br/>
-                <code>Cosine Sim(A, B) = (A · B) / (||A|| × ||B||)</code>
+                <h3>TF-IDF & Cosine</h3>
+                <p>Measures semantic similarity using vectorization</p>
             </div>
         """, unsafe_allow_html=True)
 
     with col_m2:
         st.markdown("""
             <div class="glass-card">
-                <h3>3. Skill Entity Extraction</h3>
-                <p>The system utilizes a 250+ item technical taxonomy spanning:</p>
-                <ul>
-                    <li>AI & Machine Learning (PyTorch, TensorFlow, Scikit-Learn, NLP, LLMs)</li>
-                    <li>Software & Web Dev (React, Node.js, Python, FastAPI, Django)</li>
-                    <li>Data Analytics (SQL, Pandas, Tableau, Power BI)</li>
-                    <li>Cloud & DevOps (AWS, Azure, Docker, Kubernetes, CI/CD)</li>
-                </ul>
+                <h3>Skill Extraction</h3>
+                <p>250+ technical skills taxonomy</p>
             </div>
         """, unsafe_allow_html=True)
