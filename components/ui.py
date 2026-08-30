@@ -50,7 +50,6 @@ def render_metric_cards(total, top_matches, avg_score, best_candidate, best_scor
         """, unsafe_allow_html=True)
 
 def plot_candidate_radar(candidate_res):
-    """Generates a clean Radar Chart for candidate breakdown scores."""
     categories = ['Skill Match', 'Semantic Similarity', 'Experience Match', 'Education Match']
     values = [
         candidate_res['skill_score'],
@@ -71,16 +70,8 @@ def plot_candidate_radar(candidate_res):
 
     fig.update_layout(
         polar=dict(
-            radialaxis=dict(
-                visible=True,
-                range=[0, 100],
-                color='#475569',
-                gridcolor='#E2E8F0'
-            ),
-            angularaxis=dict(
-                color='#0F172A',
-                gridcolor='#E2E8F0'
-            ),
+            radialaxis=dict(visible=True, range=[0, 100], color='#475569', gridcolor='#E2E8F0'),
+            angularaxis=dict(color='#0F172A', gridcolor='#E2E8F0'),
             bgcolor='#FFFFFF'
         ),
         paper_bgcolor='rgba(0, 0, 0, 0)',
@@ -92,7 +83,6 @@ def plot_candidate_radar(candidate_res):
     return fig
 
 def plot_comparison_radar(res1, res2):
-    """Generates a dual-candidate comparison radar chart."""
     categories = ['Skill Match', 'Semantic Similarity', 'Experience Match', 'Education Match']
     val1 = [res1['skill_score'], res1['semantic_score'], res1['experience_score'], res1['education_score']]
     val2 = [res2['skill_score'], res2['semantic_score'], res2['experience_score'], res2['education_score']]
