@@ -62,24 +62,24 @@ export const ComparisonTab: React.FC<ComparisonTabProps> = ({ candidates }) => {
   return (
     <div className="space-y-6">
       {/* Selection Row */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-          <Swords className="w-5 h-5 text-indigo-600" /> Head-to-Head Candidate Comparison
-        </h2>
+      <div className="glass-card">
+        <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <Swords className="w-5 h-5 text-indigo-600" /> Head-to-Head Comparison
+        </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-4 bg-indigo-50/60 border border-indigo-200 rounded-xl">
             <label className="block text-xs font-bold uppercase tracking-wider text-indigo-800 mb-1.5">
-              Candidate A (Blue):
+              Candidate A:
             </label>
             <select
               value={candAName}
               onChange={(e) => setCandAName(e.target.value)}
-              className="w-full bg-white border border-indigo-200 text-sm font-bold text-slate-900 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-white border border-indigo-200 text-sm font-bold text-slate-900 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs"
             >
               {candidates.map((c) => (
                 <option key={c.candidate_name} value={c.candidate_name}>
-                  {c.candidate_name} ({c.overall_score}%)
+                  {c.candidate_name} ({c.overall_score.toFixed(1)}%)
                 </option>
               ))}
             </select>
@@ -87,16 +87,16 @@ export const ComparisonTab: React.FC<ComparisonTabProps> = ({ candidates }) => {
 
           <div className="p-4 bg-purple-50/60 border border-purple-200 rounded-xl">
             <label className="block text-xs font-bold uppercase tracking-wider text-purple-800 mb-1.5">
-              Candidate B (Purple):
+              Candidate B:
             </label>
             <select
               value={candBName}
               onChange={(e) => setCandBName(e.target.value)}
-              className="w-full bg-white border border-purple-200 text-sm font-bold text-slate-900 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full bg-white border border-purple-200 text-sm font-bold text-slate-900 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-xs"
             >
               {candidates.map((c) => (
                 <option key={c.candidate_name} value={c.candidate_name}>
-                  {c.candidate_name} ({c.overall_score}%)
+                  {c.candidate_name} ({c.overall_score.toFixed(1)}%)
                 </option>
               ))}
             </select>
@@ -107,9 +107,9 @@ export const ComparisonTab: React.FC<ComparisonTabProps> = ({ candidates }) => {
       {/* Visual Comparison: Radar Chart & Metrics Table */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Radar Chart */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-between">
+        <div className="glass-card flex flex-col items-center justify-between">
           <div className="w-full mb-2">
-            <h3 className="text-base font-bold text-slate-900">Multi-Factor Skill Radar</h3>
+            <h4 className="text-base font-bold text-slate-900">Skill Radar</h4>
             <p className="text-xs text-slate-500">Overlay of 5 core qualification dimensions</p>
           </div>
 
@@ -124,14 +124,14 @@ export const ComparisonTab: React.FC<ComparisonTabProps> = ({ candidates }) => {
                   dataKey="A"
                   stroke="#4f46e5"
                   fill="#6366f1"
-                  fillOpacity={0.45}
+                  fillOpacity={0.35}
                 />
                 <Radar
                   name={candB.candidate_name}
                   dataKey="B"
                   stroke="#9333ea"
                   fill="#a855f7"
-                  fillOpacity={0.45}
+                  fillOpacity={0.35}
                 />
                 <Tooltip />
                 <Legend wrapperStyle={{ fontSize: '12px', fontWeight: 'bold' }} />
@@ -141,28 +141,28 @@ export const ComparisonTab: React.FC<ComparisonTabProps> = ({ candidates }) => {
         </div>
 
         {/* Breakdown Table */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm overflow-x-auto">
+        <div className="glass-card overflow-x-auto">
           <div className="mb-4">
-            <h3 className="text-base font-bold text-slate-900">Metric Breakdown</h3>
+            <h4 className="text-base font-bold text-slate-900">Score Breakdown</h4>
             <p className="text-xs text-slate-500">Side-by-side metric comparison</p>
           </div>
 
-          <table className="w-full text-xs text-left border-collapse">
+          <table className="w-full text-xs text-left border-collapse rounded-xl overflow-hidden border border-slate-200 shadow-xs">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-600 font-bold uppercase text-[10px]">
+              <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-100 to-slate-200/80 text-slate-800 font-bold uppercase text-[10px]">
                 <th className="py-2.5 px-3">Metric</th>
-                <th className="py-2.5 px-3 text-indigo-700">{candA.candidate_name}</th>
-                <th className="py-2.5 px-3 text-purple-700">{candB.candidate_name}</th>
+                <th className="py-2.5 px-3 text-indigo-700">A ({candA.candidate_name})</th>
+                <th className="py-2.5 px-3 text-purple-700">B ({candB.candidate_name})</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 bg-white">
               {comparisonRows.map((row, i) => (
                 <tr key={i} className="hover:bg-slate-50/50">
                   <td className="py-2.5 px-3 font-semibold text-slate-700">{row.label}</td>
-                  <td className={`py-2.5 px-3 font-mono font-bold ${row.winner === 'A' ? 'text-indigo-600 bg-indigo-50/40 rounded' : 'text-slate-800'}`}>
+                  <td className={`py-2.5 px-3 font-mono font-bold ${row.winner === 'A' ? 'text-indigo-600 bg-indigo-50/40' : 'text-slate-800'}`}>
                     {row.valA} {row.winner === 'A' && '★'}
                   </td>
-                  <td className={`py-2.5 px-3 font-mono font-bold ${row.winner === 'B' ? 'text-purple-600 bg-purple-50/40 rounded' : 'text-slate-800'}`}>
+                  <td className={`py-2.5 px-3 font-mono font-bold ${row.winner === 'B' ? 'text-purple-600 bg-purple-50/40' : 'text-slate-800'}`}>
                     {row.valB} {row.winner === 'B' && '★'}
                   </td>
                 </tr>
@@ -173,107 +173,109 @@ export const ComparisonTab: React.FC<ComparisonTabProps> = ({ candidates }) => {
       </div>
 
       {/* AI Feedback & Questions Comparison */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Candidate A Card */}
-        <div className="bg-white border border-indigo-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="text-base font-bold text-indigo-900">{candA.candidate_name}</h3>
-            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
-              {candA.overall_score}% Fit
-            </span>
-          </div>
+      <div className="mt-8">
+        <h3 className="text-xl font-bold text-slate-900 mb-4">AI Feedback</h3>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Recruiter Assessment</h4>
-            <p className="text-xs text-slate-700 italic bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-              {fbA.summary}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Candidate A Card */}
+          <div className="glass-card space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-lg font-bold text-indigo-900">{candA.candidate_name}</h3>
+              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800">
+                {candA.overall_score.toFixed(1)}% Fit
+              </span>
+            </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1.5 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Strengths
-            </h4>
-            <ul className="text-xs text-slate-700 space-y-1 pl-1">
-              {fbA.strengths.map((s, i) => (
-                <li key={i}>• {s}</li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <p className="text-xs text-slate-700">
+                <strong>Assessment:</strong> {fbA.summary}
+              </p>
+            </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-rose-700 mb-1.5 flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5" /> Skill & Experience Gaps
-            </h4>
-            <ul className="text-xs text-slate-700 space-y-1 pl-1">
-              {fbA.weaknesses.map((w, i) => (
-                <li key={i}>• {w}</li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5 flex items-center gap-1">
+                Strengths
+              </h4>
+              <ul className="text-xs text-slate-700 space-y-1 pl-1">
+                {fbA.strengths.map((s, i) => (
+                  <li key={i}>- {s}</li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-1.5 flex items-center gap-1">
-              <HelpCircle className="w-3.5 h-3.5" /> Targeted Interview Questions
-            </h4>
-            <div className="space-y-1.5">
-              {fbA.interview_questions.map((q, i) => (
-                <div key={i} className="text-xs font-medium text-slate-800 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                  {q}
-                </div>
-              ))}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5 flex items-center gap-1">
+                Gaps
+              </h4>
+              <ul className="text-xs text-slate-700 space-y-1 pl-1">
+                {fbA.weaknesses.map((w, i) => (
+                  <li key={i}>- {w}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5 flex items-center gap-1">
+                Interview Questions
+              </h4>
+              <div className="space-y-1.5">
+                {fbA.interview_questions.map((q, i) => (
+                  <div key={i} className="text-xs font-bold text-slate-800 bg-white p-2.5 rounded-lg border border-slate-200">
+                    {q}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Candidate B Card */}
-        <div className="bg-white border border-purple-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h3 className="text-base font-bold text-purple-900">{candB.candidate_name}</h3>
-            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">
-              {candB.overall_score}% Fit
-            </span>
-          </div>
+          {/* Candidate B Card */}
+          <div className="glass-card space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="text-lg font-bold text-purple-900">{candB.candidate_name}</h3>
+              <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800">
+                {candB.overall_score.toFixed(1)}% Fit
+              </span>
+            </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Recruiter Assessment</h4>
-            <p className="text-xs text-slate-700 italic bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-              {fbB.summary}
-            </p>
-          </div>
+            <div>
+              <p className="text-xs text-slate-700">
+                <strong>Assessment:</strong> {fbB.summary}
+              </p>
+            </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-1.5 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Strengths
-            </h4>
-            <ul className="text-xs text-slate-700 space-y-1 pl-1">
-              {fbB.strengths.map((s, i) => (
-                <li key={i}>• {s}</li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5 flex items-center gap-1">
+                Strengths
+              </h4>
+              <ul className="text-xs text-slate-700 space-y-1 pl-1">
+                {fbB.strengths.map((s, i) => (
+                  <li key={i}>- {s}</li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-rose-700 mb-1.5 flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5" /> Skill & Experience Gaps
-            </h4>
-            <ul className="text-xs text-slate-700 space-y-1 pl-1">
-              {fbB.weaknesses.map((w, i) => (
-                <li key={i}>• {w}</li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5 flex items-center gap-1">
+                Gaps
+              </h4>
+              <ul className="text-xs text-slate-700 space-y-1 pl-1">
+                {fbB.weaknesses.map((w, i) => (
+                  <li key={i}>- {w}</li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-purple-700 mb-1.5 flex items-center gap-1">
-              <HelpCircle className="w-3.5 h-3.5" /> Targeted Interview Questions
-            </h4>
-            <div className="space-y-1.5">
-              {fbB.interview_questions.map((q, i) => (
-                <div key={i} className="text-xs font-medium text-slate-800 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                  {q}
-                </div>
-              ))}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5 flex items-center gap-1">
+                Interview Questions
+              </h4>
+              <div className="space-y-1.5">
+                {fbB.interview_questions.map((q, i) => (
+                  <div key={i} className="text-xs font-bold text-slate-800 bg-white p-2.5 rounded-lg border border-slate-200">
+                    {q}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

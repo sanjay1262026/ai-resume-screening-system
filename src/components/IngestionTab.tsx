@@ -132,106 +132,75 @@ export const IngestionTab: React.FC<IngestionTabProps> = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Column 1: Job Description Specification */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-indigo-600" />
-              <h2 className="text-lg font-bold text-slate-900">Job Description (JD)</h2>
-            </div>
-            <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-semibold">
-              Step 1
-            </span>
-          </div>
+      <div className="glass-card">
+        <h3 className="text-xl font-bold text-slate-900 mb-3">Job Description</h3>
 
-          <div className="mb-4">
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-              Select Industry Template or Custom:
-            </label>
-            <select
-              value={selectedTemplate}
-              onChange={(e) => handleTemplateChange(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-3.5 py-2.5 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="ai_ml">Senior AI / ML Engineer</option>
-              <option value="fullstack">Full Stack Web Developer</option>
-              <option value="data_analyst">Data Analyst Specialist</option>
-              <option value="custom">Custom Job Description</option>
-            </select>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">
-              Job Requirements Text:
-            </label>
-            <textarea
-              rows={8}
-              value={jdText}
-              onChange={(e) => {
-                onJdTextChange(e.target.value);
-                setSelectedTemplate('custom');
-              }}
-              placeholder="Paste target job responsibilities, required skills, and qualification thresholds here..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs sm:text-sm text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
-            />
-          </div>
-
-          {/* Real-time Extracted Requirements Preview */}
-          <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" /> Extracted Target Criteria
-            </h4>
-
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-2 text-slate-700 bg-white p-2 rounded-lg border border-slate-200/60">
-                <Clock className="w-4 h-4 text-teal-600 shrink-0" />
-                <span>
-                  Experience: <strong className="text-slate-900">{reqs.min_experience_years}+ Years</strong>
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700 bg-white p-2 rounded-lg border border-slate-200/60">
-                <GraduationCap className="w-4 h-4 text-purple-600 shrink-0" />
-                <span className="truncate">
-                  Edu: <strong className="text-slate-900">{reqs.min_education}</strong>
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <span className="text-xs font-semibold text-slate-600 block mb-1.5">
-                Target Skills Detected ({reqs.required_skills.length}):
-              </span>
-              <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1">
-                {reqs.required_skills.length > 0 ? (
-                  reqs.required_skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
-                    >
-                      ✓ {skill}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-xs text-slate-400 italic">No recognized keywords yet. Enter skills like Python, React, SQL...</span>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="mb-4">
+          <label className="block text-xs font-semibold text-slate-700 mb-1">
+            Template:
+          </label>
+          <select
+            value={selectedTemplate}
+            onChange={(e) => handleTemplateChange(e.target.value)}
+            className="w-full bg-white border border-slate-300 text-sm rounded-xl px-3.5 py-2.5 text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs"
+          >
+            <option value="custom">Custom Input</option>
+            <option value="ai_ml">Senior AI / ML Engineer</option>
+            <option value="fullstack">Full Stack Web Developer</option>
+            <option value="data_analyst">Data Analyst</option>
+          </select>
         </div>
+
+        <div className="mb-4">
+          <label className="block text-xs font-semibold text-slate-700 mb-1">
+            Job Description:
+          </label>
+          <textarea
+            rows={10}
+            value={jdText}
+            onChange={(e) => {
+              onJdTextChange(e.target.value);
+              setSelectedTemplate('custom');
+            }}
+            placeholder="Paste job description here..."
+            className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs resize-y"
+          />
+        </div>
+
+        {/* Real-time Extracted Requirements Preview */}
+        {jdText.trim() && (
+          <div className="mt-4 pt-4 border-t border-slate-200">
+            <h4 className="text-sm font-bold text-slate-800 mb-2">Job Criteria</h4>
+            <p className="text-xs text-slate-700 mb-2">
+              <strong>Experience:</strong> <code className="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded text-xs">{reqs.min_experience_years}+ Years</code> | <strong>Education:</strong> <code className="bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded text-xs">{reqs.min_education}</code>
+            </p>
+            <p className="text-xs font-bold text-slate-800 mb-1.5">Target Skills:</p>
+            <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1">
+              {reqs.required_skills.length > 0 ? (
+                reqs.required_skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="skill-tag skill-tag-matched inline-flex items-center gap-1"
+                  >
+                    ✓ {skill}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-slate-400 italic">No recognized keywords yet. Enter skills like Python, React, SQL...</span>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Column 2: Candidate Resumes Ingestion */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div className="glass-card flex flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-indigo-600" />
-              <h2 className="text-lg font-bold text-slate-900">Candidate Resumes</h2>
-            </div>
-            <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-semibold">
-              Step 2
-            </span>
-          </div>
+          <h3 className="text-xl font-bold text-slate-900 mb-3">Candidate Resumes</h3>
+
+          <label className="block text-xs font-semibold text-slate-700 mb-1">
+            Upload (PDF, DOCX, TXT):
+          </label>
 
           {/* Drag & Drop Zone */}
           <div
@@ -266,7 +235,7 @@ export const IngestionTab: React.FC<IngestionTabProps> = ({
             <p className="text-sm font-bold text-slate-800">
               Drag & drop resume documents, or <span className="text-indigo-600 hover:underline">browse files</span>
             </p>
-            <p className="text-xs text-slate-500 mt-1">Supports PDF, Word (.docx), and plain text (.txt)</p>
+            <p className="text-xs text-slate-500 mt-1">200MB per file • PDF, DOCX, DOC, TXT</p>
           </div>
 
           {/* File Queue List */}
@@ -276,7 +245,7 @@ export const IngestionTab: React.FC<IngestionTabProps> = ({
                 <span>Queued Uploads ({uploadedFiles.length})</span>
                 <button
                   onClick={() => setUploadedFiles([])}
-                  className="text-rose-600 hover:underline flex items-center gap-1"
+                  className="text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="w-3 h-3" /> Clear Uploads
                 </button>
@@ -293,7 +262,7 @@ export const IngestionTab: React.FC<IngestionTabProps> = ({
                   </div>
                   <button
                     onClick={() => handleRemoveFile(idx)}
-                    className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
+                    className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -302,43 +271,46 @@ export const IngestionTab: React.FC<IngestionTabProps> = ({
             </div>
           )}
 
-          {/* Sample Candidates Checkbox */}
-          <div className="mt-5 p-3.5 bg-indigo-50/70 border border-indigo-100 rounded-xl">
-            <label className="flex items-start gap-3 cursor-pointer">
+          {/* Sample Candidates Checkbox & Clear Row */}
+          <div className="grid grid-cols-2 gap-4 items-center mt-5">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
               <input
                 type="checkbox"
                 checked={includeSamples}
                 onChange={(e) => setIncludeSamples(e.target.checked)}
-                className="mt-0.5 accent-indigo-600 w-4 h-4 rounded"
+                className="w-4 h-4 accent-indigo-600 rounded"
               />
-              <div className="text-xs">
-                <span className="font-bold text-indigo-950 flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-indigo-600" /> Include 6 Showcase Candidates
-                </span>
-                <p className="text-slate-600 mt-0.5">
-                  Pre-loads Alex Rivera (Senior AI), Priya Sharma (ML Dev), Marcus Chen (Data Scientist), Sophia Taylor (FullStack), David Miller (Junior), and Emily Watson (Marketing).
-                </p>
-              </div>
+              <span>Use Sample Resumes</span>
             </label>
+
+            <button
+              onClick={() => {
+                setUploadedFiles([]);
+                onScreeningComplete([]);
+              }}
+              className="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 py-2 px-3 rounded-lg border border-slate-300 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <span>🗑️ Clear</span>
+            </button>
           </div>
         </div>
 
         {/* Action Button */}
-        <div className="mt-6 pt-4 border-t border-slate-100">
+        <div className="mt-6 pt-4 border-t border-slate-200">
           <button
             onClick={handleRunScreening}
             disabled={isProcessing}
-            className="w-full flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:to-pink-700 shadow-lg shadow-indigo-500/25 active:scale-98 transition-all disabled:opacity-50 cursor-pointer"
+            className="btn-purple w-full py-3.5 text-base font-bold text-white shadow-lg cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isProcessing ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Evaluating Resumes & Vector Similarities...</span>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Processing AI Screening...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
-                <span>Run AI Screening & Rank Candidates</span>
+                <Sparkles className="w-5 h-5" />
+                <span>Run AI Screening</span>
               </>
             )}
           </button>

@@ -30,10 +30,10 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ candidates, jdTitle }) =
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
-          <FileDown className="w-5 h-5 text-indigo-600" /> Export & Executive Reporting
-        </h2>
+      <div className="glass-card">
+        <h3 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
+          <FileDown className="w-5 h-5 text-indigo-600" /> Export & Reports
+        </h3>
         <p className="text-xs text-slate-500">
           Export candidate evaluation results, ranking tables, and skill gap summaries for hiring committee review
         </p>
@@ -41,12 +41,12 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ candidates, jdTitle }) =
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* CSV Export Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div className="glass-card flex flex-col justify-between">
           <div className="space-y-3">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <FileSpreadsheet className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900">Spreadsheet Data Export (.CSV)</h3>
+            <h4 className="text-lg font-bold text-slate-900">CSV Report</h4>
             <p className="text-xs text-slate-600 leading-relaxed">
               Full tabulated dataset including overall fit %, individual subscores (skill, semantic, experience, education), matched skills count, missing skills, and applicant contact information.
             </p>
@@ -64,21 +64,21 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ candidates, jdTitle }) =
             <button
               onClick={handleDownloadCsv}
               disabled={candidates.length === 0 || downloadingCsv}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-md shadow-emerald-600/20"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-md shadow-emerald-600/20 cursor-pointer"
             >
               <FileSpreadsheet className="w-4 h-4" />
-              {downloadingCsv ? 'Generating CSV...' : `Download CSV Report (${candidates.length} records)`}
+              {downloadingCsv ? 'Generating CSV...' : `📥 Download CSV Report (${candidates.length} records)`}
             </button>
           </div>
         </div>
 
         {/* PDF Executive Report Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div className="glass-card flex flex-col justify-between">
           <div className="space-y-3">
             <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <FileText className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900">Executive Summary PDF</h3>
+            <h4 className="text-lg font-bold text-slate-900">PDF Summary Report</h4>
             <p className="text-xs text-slate-600 leading-relaxed">
               Clean, formatted hiring report with an executive summary banner, key cohort statistics, styled candidate rankings table, and top candidate spotlight review.
             </p>
@@ -96,10 +96,10 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ candidates, jdTitle }) =
             <button
               onClick={handleDownloadPdf}
               disabled={candidates.length === 0 || downloadingPdf}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-md shadow-indigo-600/20"
+              className="btn-purple w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold text-white disabled:opacity-50 transition-all shadow-md cursor-pointer"
             >
               <FileText className="w-4 h-4" />
-              {downloadingPdf ? 'Compiling PDF...' : `Download Executive PDF (${candidates.length} records)`}
+              {downloadingPdf ? 'Compiling PDF...' : `📥 Download PDF Report (${candidates.length} records)`}
             </button>
           </div>
         </div>

@@ -9,10 +9,10 @@ export const EngineTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-        <h2 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
-          <Cpu className="w-5 h-5 text-indigo-600" /> Scoring Engine & Algorithm Architecture
-        </h2>
+      <div className="glass-card">
+        <h3 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
+          <Cpu className="w-5 h-5 text-indigo-600" /> Scoring Engine Architecture
+        </h3>
         <p className="text-xs text-slate-500">
           Transparent multi-factor methodology, vector mathematics, and canonical technical skill taxonomy
         </p>
@@ -21,15 +21,15 @@ export const EngineTab: React.FC = () => {
       {/* Math & Logic Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Composite Score Formula */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+        <div className="glass-card space-y-4">
+          <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <Target className="w-4 h-4 text-indigo-600" /> Multi-Factor Composite Scoring
-          </h3>
+          </h4>
           <p className="text-xs text-slate-600 leading-relaxed">
             Rather than relying solely on naive keyword counting, candidates are evaluated across 4 weighted dimensions with user-configurable weights:
           </p>
 
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 font-mono text-xs text-indigo-900">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 font-mono text-xs text-indigo-900 shadow-xs">
             <strong>Composite Score</strong> = (Skill_Match × W_s) + (Semantic_Sim × W_v) + (Exp_Match × W_e) + (Edu_Match × W_ed)
           </div>
 
@@ -50,15 +50,15 @@ export const EngineTab: React.FC = () => {
         </div>
 
         {/* Vector Similarity Explanation */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+        <div className="glass-card space-y-4">
+          <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <BookOpen className="w-4 h-4 text-purple-600" /> Sublinear TF-IDF & Cosine Similarity
-          </h3>
+          </h4>
           <p className="text-xs text-slate-600 leading-relaxed">
             Text from both the job specification and candidate resumes is normalized, filtered for stop words, and transformed into high-dimensional vector representations.
           </p>
 
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2 text-xs text-slate-800 font-mono">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2 text-xs text-slate-800 font-mono shadow-xs">
             <div>
               <strong>Sublinear TF:</strong> <span className="text-slate-600">tf = 1 + ln(f) if f &gt; 0 else 0</span>
             </div>
@@ -82,11 +82,11 @@ export const EngineTab: React.FC = () => {
       </div>
 
       {/* Skill Taxonomy Browser */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div className="glass-card">
         <div className="mb-4">
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+          <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <Layers className="w-4 h-4 text-indigo-600" /> 250+ Technical Skill Taxonomy
-          </h3>
+          </h4>
           <p className="text-xs text-slate-500">
             Categorized technical skills with canonical formatting and boundary-safe extraction
           </p>
@@ -98,7 +98,7 @@ export const EngineTab: React.FC = () => {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeCategory === cat
                   ? 'bg-indigo-600 text-white shadow-sm'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -110,13 +110,13 @@ export const EngineTab: React.FC = () => {
         </div>
 
         {/* Skill badges list */}
-        <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-100">
+        <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
           {SKILL_TAXONOMY[activeCategory].map((rawSkill) => {
             const displayName = CANONICAL_NAMES[rawSkill] || (rawSkill.length > 3 ? rawSkill.charAt(0).toUpperCase() + rawSkill.slice(1) : rawSkill.toUpperCase());
             return (
               <span
                 key={rawSkill}
-                className="px-3 py-1 rounded-lg text-xs font-medium bg-white text-slate-800 border border-slate-200/80 shadow-xs flex items-center gap-1.5"
+                className="px-3 py-1 rounded-lg text-xs font-medium bg-white text-slate-800 border border-slate-200 shadow-xs flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-3 h-3 text-indigo-500" />
                 {displayName}

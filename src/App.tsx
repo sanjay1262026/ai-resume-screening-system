@@ -215,7 +215,7 @@ export const App: React.FC = () => {
             onStatusFilterChange={setStatusFilters}
             onLoadSampleData={handleLoadSampleData}
             currentUser={currentUser}
-            onLogin={(user) => setCurrentUser({ id: 1, username: user, full_name: user })}
+            onLogin={(user) => setCurrentUser(user)}
             onLogout={() => setCurrentUser(null)}
             sessions={sessions}
             onSaveSession={handleSaveSession}
@@ -226,80 +226,80 @@ export const App: React.FC = () => {
           {/* Right Workspace Area */}
           <div className="flex-1 w-full space-y-6">
             {/* Tabs Navigation Header */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm flex flex-wrap gap-1">
+            <div className="glass-card !p-1.5 flex flex-wrap gap-1 mb-6">
               <button
-                onClick={() => setActiveTab('leaderboard')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  activeTab === 'leaderboard'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                onClick={() => setActiveTab('ingest')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === 'ingest'
+                    ? 'btn-purple text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
                 }`}
               >
-                <Trophy className="w-4 h-4" />
+                <span>📥</span>
+                <span>Ingestion & Screening</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('leaderboard')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === 'leaderboard'
+                    ? 'btn-purple text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+                }`}
+              >
+                <span>🏆</span>
                 <span>Leaderboard</span>
-                <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${activeTab === 'leaderboard' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${activeTab === 'leaderboard' ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'}`}>
                   {filteredCandidates.length}
                 </span>
               </button>
 
               <button
-                onClick={() => setActiveTab('ingest')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  activeTab === 'ingest'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                }`}
-              >
-                <FileText className="w-4 h-4" />
-                <span>Ingestion & Resumes</span>
-              </button>
-
-              <button
                 onClick={() => setActiveTab('compare')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activeTab === 'compare'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'btn-purple text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
                 }`}
               >
-                <Swords className="w-4 h-4" />
-                <span>Comparison Radar</span>
+                <span>⚔️</span>
+                <span>Head-to-Head Comparison</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('analytics')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activeTab === 'analytics'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'btn-purple text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
                 }`}
               >
-                <BarChart3 className="w-4 h-4" />
-                <span>Talent Analytics</span>
+                <span>📊</span>
+                <span>Analytics</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('reports')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activeTab === 'reports'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'btn-purple text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
                 }`}
               >
-                <FileDown className="w-4 h-4" />
+                <span>📑</span>
                 <span>Reports & Export</span>
               </button>
 
               <button
                 onClick={() => setActiveTab('engine')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   activeTab === 'engine'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    ? 'btn-purple text-white shadow-md'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
                 }`}
               >
-                <Cpu className="w-4 h-4" />
-                <span>Algorithm & Skills</span>
+                <span>⚙️</span>
+                <span>Scoring Engine</span>
               </button>
             </div>
 

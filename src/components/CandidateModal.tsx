@@ -102,7 +102,7 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({ candidate, onClo
                 candidate.matched_skills.map((s) => (
                   <span
                     key={s}
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    className="skill-tag skill-tag-matched"
                   >
                     ✓ {s}
                   </span>
@@ -123,7 +123,7 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({ candidate, onClo
                 {candidate.missing_skills.map((s) => (
                   <span
                     key={s}
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200"
+                    className="skill-tag skill-tag-missing"
                   >
                     ✕ {s}
                   </span>
@@ -142,9 +142,9 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({ candidate, onClo
                 {candidate.extra_skills.slice(0, 15).map((s) => (
                   <span
                     key={s}
-                    className="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+                    className="skill-tag skill-tag-matched"
                   >
-                    {s}
+                    + {s}
                   </span>
                 ))}
               </div>
