@@ -217,8 +217,8 @@ export const IngestionTab: React.FC<IngestionTabProps> = ({
             onClick={() => fileInputRef.current?.click()}
             className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
               dragActive
-                ? 'border-indigo-500 bg-indigo-50/50'
-                : 'border-slate-300 hover:border-indigo-400 bg-slate-50/50'
+                ? 'border-indigo-500 bg-indigo-50/60'
+                : 'border-slate-300 hover:border-indigo-400 bg-white hover:bg-slate-50/80'
             }`}
           >
             <input

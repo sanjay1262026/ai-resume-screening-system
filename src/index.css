@@ -1,14 +1,45 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: light !important;
+  --color-scheme: light !important;
+}
+
+html {
+  color-scheme: light !important;
+  background-color: #F8FAFC !important;
+}
+
 @layer base {
   body {
     font-family: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #F0F4F9 0%, #E8EEF7 100%);
-    color: #0F172A;
+    background: #F8FAFC !important;
+    color: #0F172A !important;
+    color-scheme: light !important;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Inter', sans-serif;
+  }
+
+  /* Force pure white on all input, select, textarea, option elements regardless of OS/browser dark mode */
+  input,
+  select,
+  textarea {
+    color-scheme: light !important;
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
+    border-color: #CBD5E1 !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94A3B8 !important;
+  }
+
+  select option {
+    background-color: #FFFFFF !important;
+    color: #0F172A !important;
   }
 }
 

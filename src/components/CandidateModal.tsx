@@ -36,7 +36,7 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({ candidate, onClo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/20 backdrop-blur-sm animate-fade-in">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
         {/* Header */}
         <div className="p-5 sm:p-6 bg-slate-50 border-b border-slate-200 flex items-start justify-between">
