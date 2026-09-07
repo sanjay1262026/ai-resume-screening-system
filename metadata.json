@@ -1,0 +1,6 @@
+{
+  "name": "AI Resume Screening System",
+  "description": "AI-powered resume screening and candidate ranking system featuring multi-factor scoring, semantic similarity, skill extraction, candidate comparison, and analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
