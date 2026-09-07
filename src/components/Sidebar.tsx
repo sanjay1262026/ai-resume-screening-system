@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, ChevronsLeft, ChevronsRight, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, ChevronsLeft, ChevronsRight, Sparkles, Cloud, CloudCheck, UserCheck, LogOut } from 'lucide-react';
 import { ScoringWeights, ScreeningSession, User as UserType } from '../types';
 
 interface SidebarProps {
@@ -23,6 +23,7 @@ interface SidebarProps {
   hasResults: boolean;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  isCloudSaving?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -42,78 +43,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
   hasResults,
   isCollapsed = false,
   onToggleCollapse,
+  isCloudSaving = false,
 }) => {
-  const [authAction, setAuthAction] = useState<'login' | 'register' | 'forgot'>('login');
   const [usernameInput, setUsernameInput] = useState('admin');
   const [passwordInput, setPasswordInput] = useState('admin123');
-  const [fullNameInput, setFullNameInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [selectedSessionId, setSelectedSessionId] = useState<number | ''>('');
   const [authMessage, setAuthMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [saveSuccessMsg, setSaveSuccessMsg] = useState(false);
 
   // Handle Login
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setAuthMessage(null);
-    if (!usernameInput.trim() || !passwordInput.trim()) {
-      setAuthMessage({ type: 'error', text: 'Please enter username and password.' });
+    if (!usernameInput.trim()) {
+      setAuthMessage({ type: 'error', text: 'Please enter a username.' });
       return;
     }
 
-    // Default admin check or simulated user auth
-    if (
-      (usernameInput.toLowerCase() === 'admin' && passwordInput === 'admin123') ||
-      passwordInput.length >= 4
-    ) {
-      const user: UserType = {
-        id: 1,
-        username: usernameInput.toLowerCase().trim(),
-        full_name: fullNameInput.trim() || (usernameInput.toLowerCase() === 'admin' ? 'Admin Recruiter' : usernameInput),
-      };
-      onLogin(user);
-      setAuthMessage({ type: 'success', text: `Welcome back, ${user.full_name}!` });
-    } else {
-      setAuthMessage({ type: 'error', text: 'Invalid Username or Password.' });
-    }
-  };
-
-  // Handle Register
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!usernameInput.trim() || !passwordInput.trim() || !fullNameInput.trim()) {
-      setAuthMessage({ type: 'error', text: 'Please fill in all registration fields.' });
-      return;
-    }
+    const clean = usernameInput.toLowerCase().trim();
     const user: UserType = {
-      id: Date.now(),
-      username: usernameInput.toLowerCase().trim(),
-      full_name: fullNameInput.trim(),
+      id: clean === 'admin' ? 1 : Date.now(),
+      username: clean,
+      full_name: clean === 'admin' ? 'Lead Recruiter' : clean.charAt(0).toUpperCase() + clean.slice(1),
     };
     onLogin(user);
-    setAuthMessage({ type: 'success', text: 'User registered successfully! Logged in now.' });
-  };
-
-  // Handle Password Reset
-  const handleResetPassword = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!usernameInput.trim() || !passwordInput.trim()) {
-      setAuthMessage({ type: 'error', text: 'Please enter username and new password.' });
-      return;
-    }
-    setAuthMessage({ type: 'success', text: `Password for @${usernameInput} reset successfully! You can now log in.` });
-    setAuthAction('login');
-  };
-
-  const handleSaveClick = () => {
-    onSaveSession();
-    setSaveSuccessMsg(true);
-    setTimeout(() => setSaveSuccessMsg(false), 2500);
+    setAuthMessage({ type: 'success', text: `Signed in as @${user.username}` });
   };
 
   if (isCollapsed) {
     return (
-      <aside className="w-16 bg-white border-r-2 border-[#F0F4F9] p-3 flex flex-col items-center justify-between min-h-[calc(100vh-4rem)]">
+      <aside className="w-16 bg-white border-r border-slate-200 p-3 flex flex-col items-center justify-between min-h-[calc(100vh-4rem)]">
         <button
           onClick={onToggleCollapse}
           className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors cursor-pointer"
@@ -121,202 +80,115 @@ export const Sidebar: React.FC<SidebarProps> = ({
         >
           <ChevronsRight className="w-5 h-5" />
         </button>
-        <span className="text-2xl" title="TailAdmin">🎯</span>
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-xs">
+          <Sparkles className="w-5 h-5" />
+        </div>
         <div />
       </aside>
     );
   }
 
   return (
-    <aside className="w-full lg:w-72 xl:w-80 bg-white border-r-2 border-[#F0F4F9] p-5 shadow-xs shrink-0 flex flex-col space-y-5">
-      {/* Sidebar Header with Collapse button */}
-      <div className="relative flex flex-col items-center justify-center pt-1 pb-2">
+    <aside className="w-full lg:w-72 xl:w-80 bg-white border-r border-slate-200 p-5 shadow-xs shrink-0 flex flex-col space-y-5 rounded-2xl">
+      {/* Sidebar Brand Header */}
+      <div className="relative flex items-center justify-between pt-1 pb-1">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-extrabold text-slate-900 tracking-tight leading-none">
+              Recruiter Hub
+            </h2>
+            <p className="text-[11px] font-medium text-slate-500 mt-0.5">
+              Auto-Sync Workspace
+            </p>
+          </div>
+        </div>
         {onToggleCollapse && (
           <button
             onClick={onToggleCollapse}
-            className="absolute right-0 top-0 p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
             title="Collapse Sidebar"
           >
             <ChevronsLeft className="w-4 h-4" />
           </button>
         )}
-        <span className="text-4xl">🎯</span>
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight mt-2">TailAdmin</h2>
       </div>
 
-      <hr className="border-slate-200" />
+      <hr className="border-slate-100" />
 
       {/* Account Section */}
       <div>
         {!currentUser ? (
-          <div className="space-y-3">
-            <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-1.5">
-              <span>🔑</span> Account Login
-            </h3>
-            <p className="text-xs text-slate-500 font-medium">
-              Default: <span className="bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded font-mono text-[11px]">admin</span> / <span className="bg-slate-700 text-slate-200 px-1.5 py-0.5 rounded font-mono text-[11px]">admin123</span>
-            </p>
-
-            {/* Select Action Radio Buttons */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-2">Select Action:</label>
-              <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-800">
-                <label className="inline-flex items-center gap-1.5 cursor-pointer font-medium">
-                  <input
-                    type="radio"
-                    name="authAction"
-                    value="login"
-                    checked={authAction === 'login'}
-                    onChange={() => {
-                      setAuthAction('login');
-                      setAuthMessage(null);
-                    }}
-                    className="text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span>Login</span>
-                </label>
-                <label className="inline-flex items-center gap-1.5 cursor-pointer font-medium">
-                  <input
-                    type="radio"
-                    name="authAction"
-                    value="register"
-                    checked={authAction === 'register'}
-                    onChange={() => {
-                      setAuthAction('register');
-                      setAuthMessage(null);
-                    }}
-                    className="text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span>Register</span>
-                </label>
-                <label className="inline-flex items-center gap-1.5 cursor-pointer font-medium w-full mt-1">
-                  <input
-                    type="radio"
-                    name="authAction"
-                    value="forgot"
-                    checked={authAction === 'forgot'}
-                    onChange={() => {
-                      setAuthAction('forgot');
-                      setAuthMessage(null);
-                    }}
-                    className="text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span>Forgot Password?</span>
-                </label>
-              </div>
+          <div className="space-y-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <UserCheck className="w-3.5 h-3.5 text-indigo-600" /> Recruiter Sign In
+              </h3>
+              <span className="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                Cloud Sync
+              </span>
             </div>
 
-            {/* Auth Form */}
-            {authAction === 'login' && (
-              <form onSubmit={handleLogin} className="space-y-3 pt-1">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Username:</label>
-                  <input
-                    type="text"
-                    value={usernameInput}
-                    onChange={(e) => setUsernameInput(e.target.value)}
-                    className="w-full bg-white text-slate-900 text-sm border-2 border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Password:</label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={passwordInput}
-                      onChange={(e) => setPasswordInput(e.target.value)}
-                      className="w-full bg-white text-slate-900 text-sm border-2 border-slate-200 rounded-xl px-3 py-2.5 pr-10 focus:outline-none focus:border-indigo-500 transition-colors"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Sign in to automatically sync your candidate evaluations across all devices.
+            </p>
 
-                <button
-                  type="submit"
-                  className="btn-purple w-full py-2.5 px-4 text-xs font-bold shadow-md cursor-pointer"
-                >
-                  Login to Account
-                </button>
-              </form>
-            )}
-
-            {authAction === 'register' && (
-              <form onSubmit={handleRegister} className="space-y-3 pt-1">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Full Name:</label>
+            <form onSubmit={handleLogin} className="space-y-2.5 pt-0.5">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Username</label>
+                <input
+                  type="text"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  placeholder="e.g. admin"
+                  className="w-full bg-white text-slate-900 text-xs border border-slate-300 rounded-lg px-2.5 py-2 focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">Password</label>
+                <div className="relative">
                   <input
-                    type="text"
-                    placeholder="e.g. Lead Recruiter"
-                    value={fullNameInput}
-                    onChange={(e) => setFullNameInput(e.target.value)}
-                    className="w-full bg-white text-slate-900 text-sm border-2 border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Username:</label>
-                  <input
-                    type="text"
-                    value={usernameInput}
-                    onChange={(e) => setUsernameInput(e.target.value)}
-                    className="w-full bg-white text-slate-900 text-sm border-2 border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Password:</label>
-                  <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
-                    className="w-full bg-white text-slate-900 text-sm border-2 border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-white text-slate-900 text-xs border border-slate-300 rounded-lg px-2.5 py-2 pr-8 focus:outline-none focus:border-indigo-500"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  className="btn-purple w-full py-2.5 px-4 text-xs font-bold shadow-md cursor-pointer"
-                >
-                  Register Account
-                </button>
-              </form>
-            )}
+              </div>
 
-            {authAction === 'forgot' && (
-              <form onSubmit={handleResetPassword} className="space-y-3 pt-1">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Account Username:</label>
-                  <input
-                    type="text"
-                    value={usernameInput}
-                    onChange={(e) => setUsernameInput(e.target.value)}
-                    className="w-full bg-white text-slate-900 text-sm border-2 border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">New Password:</label>
-                  <input
-                    type="password"
-                    value={passwordInput}
-                    onChange={(e) => setPasswordInput(e.target.value)}
-                    className="w-full bg-white text-slate-900 text-sm border-2 border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="btn-purple w-full py-2.5 px-4 text-xs font-bold shadow-md cursor-pointer"
-                >
-                  Reset Password
-                </button>
-              </form>
-            )}
+              <button
+                type="submit"
+                className="btn-purple w-full py-2 px-3 text-xs font-bold shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                Sign In &amp; Sync Data
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setUsernameInput('admin');
+                  setPasswordInput('admin123');
+                  const user: UserType = { id: 1, username: 'admin', full_name: 'Lead Recruiter' };
+                  onLogin(user);
+                }}
+                className="w-full py-1.5 text-[11px] font-semibold text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors border border-dashed border-slate-300 cursor-pointer"
+              >
+                ⚡ Quick Demo (Admin)
+              </button>
+            </form>
 
             {authMessage && (
               <div
-                className={`p-2.5 rounded-xl text-xs font-semibold ${
+                className={`p-2 rounded-lg text-xs font-semibold ${
                   authMessage.type === 'success'
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                     : 'bg-rose-50 text-rose-800 border border-rose-200'
@@ -327,87 +199,85 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3 bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-100">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-extrabold text-slate-900">👤 {currentUser.full_name}</p>
-                <p className="text-xs text-slate-500">@{currentUser.username}</p>
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  {currentUser.full_name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900 leading-tight">{currentUser.full_name}</p>
+                  <p className="text-[10px] text-slate-500">@{currentUser.username}</p>
+                </div>
               </div>
               <button
                 onClick={onLogout}
-                className="text-xs font-bold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200 transition-colors cursor-pointer"
+                className="text-xs font-bold text-rose-600 hover:text-rose-800 hover:bg-rose-100/60 px-2 py-1 rounded-lg border border-rose-200 transition-colors cursor-pointer flex items-center gap-1"
+                title="Sign Out"
               >
-                Logout
+                <LogOut className="w-3 h-3" />
+                <span>Logout</span>
               </button>
             </div>
 
-            <hr className="border-slate-100" />
-
-            <h4 className="text-xs font-bold text-slate-700">💾 Saved Sessions</h4>
-
-            {hasResults && (
-              <button
-                onClick={handleSaveClick}
-                className="btn-purple w-full py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                {saveSuccessMsg ? (
-                  <>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-white" /> Session Saved!
-                  </>
-                ) : (
-                  'Save Current Results'
-                )}
-              </button>
-            )}
-
-            {sessions.length > 0 ? (
-              <div className="space-y-2">
-                <label className="block text-xs text-slate-600 font-medium">Load Session:</label>
-                <select
-                  value={selectedSessionId}
-                  onChange={(e) => setSelectedSessionId(Number(e.target.value) || '')}
-                  className="w-full bg-white border border-slate-200 text-xs rounded-xl px-2.5 py-2 text-slate-800 focus:outline-none focus:border-indigo-500"
-                >
-                  <option value="">Select saved session...</option>
-                  {sessions.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      #{s.id} - {s.jd_title.slice(0, 18)}...
-                    </option>
-                  ))}
-                </select>
-                <button
-                  disabled={!selectedSessionId}
-                  onClick={() => {
-                    if (selectedSessionId) onLoadSession(Number(selectedSessionId));
-                  }}
-                  className="w-full py-1.5 px-3 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 transition-colors cursor-pointer"
-                >
-                  Load Selected
-                </button>
+            <div className="flex items-center justify-between pt-1 border-t border-indigo-100/80 text-[11px]">
+              <div className="flex items-center gap-1.5 font-medium text-emerald-700">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Auto-saved to cloud</span>
               </div>
-            ) : (
-              <p className="text-[11px] text-slate-400 italic">No saved sessions yet.</p>
+              {isCloudSaving && (
+                <span className="text-[10px] text-indigo-500 italic">Syncing...</span>
+              )}
+            </div>
+
+            {sessions.length > 0 && (
+              <div className="pt-2 border-t border-indigo-100/80 space-y-1.5">
+                <label className="block text-[11px] text-slate-600 font-bold">Saved Screening History:</label>
+                <div className="flex gap-1.5">
+                  <select
+                    value={selectedSessionId}
+                    onChange={(e) => setSelectedSessionId(Number(e.target.value) || '')}
+                    className="flex-1 bg-white border border-slate-200 text-xs rounded-lg px-2 py-1.5 text-slate-800 focus:outline-none"
+                  >
+                    <option value="">Select past session...</option>
+                    {sessions.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.jd_title.slice(0, 20)}... ({s.created_at || 'Saved'})
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    disabled={!selectedSessionId}
+                    onClick={() => {
+                      if (selectedSessionId) onLoadSession(Number(selectedSessionId));
+                    }}
+                    className="px-2 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40 transition-colors cursor-pointer"
+                  >
+                    Load
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         )}
       </div>
 
-      <hr className="border-slate-200" />
+      <hr className="border-slate-100" />
 
       {/* Demo Data Section */}
-      <div className="space-y-2.5">
-        <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-1.5">
-          <span>⚡</span> Demo Data
+      <div className="space-y-2">
+        <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <span>⚡</span> Showcase Demo Data
         </h3>
         <button
           onClick={onLoadSampleData}
-          className="btn-purple w-full py-2.5 px-4 text-xs font-bold shadow-md cursor-pointer flex items-center justify-center gap-2"
+          className="btn-purple w-full py-2 px-3 text-xs font-bold shadow-xs cursor-pointer flex items-center justify-center gap-2"
         >
-          Load Sample Data
+          Load 6 Sample Resumes &amp; JD
         </button>
       </div>
 
-      <hr className="border-slate-200" />
+      <hr className="border-slate-100" />
 
       {/* Scoring Weights Section */}
       <div className="space-y-3.5">

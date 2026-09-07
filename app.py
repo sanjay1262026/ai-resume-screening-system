@@ -702,7 +702,7 @@ if st.session_state.current_user and not st.session_state.eval_results:
         st.session_state.eval_results = latest_cands
 
 with st.sidebar:
-    st.markdown('<div style="text-align: center; padding: 10px;"><span style="font-size: 2rem;">🎯</span><h2 style="margin-top: 10px;">TailAdmin</h2></div>', unsafe_allow_html=True)
+    st.markdown('<div style="text-align: center; padding: 10px;"><span style="font-size: 2rem;">✨</span><h2 style="margin-top: 5px; font-weight: 800; color: #1E293B;">Recruiter Hub</h2><p style="font-size: 0.8rem; color: #64748B; margin: 0;">AI Resume Screener</p></div>', unsafe_allow_html=True)
     st.markdown("---")
 
     if not st.session_state.current_user:
@@ -763,18 +763,20 @@ with st.sidebar:
             st.session_state.eval_results = []
             st.rerun()
 
+        st.markdown('<div style="display: flex; align-items: center; gap: 6px; color: #10B981; font-size: 0.8rem; font-weight: 600; margin: 6px 0 10px 0;"><span>●</span> Auto-saved to Cloud</div>', unsafe_allow_html=True)
         st.markdown("---")
-        st.subheader("💾 Saved Sessions")
+        st.subheader("💾 Saved Screening History")
         
+        # Automatic background saving whenever results exist
         if st.session_state.eval_results and st.session_state.jd_text:
-            if st.button("Save Current Results", use_container_width=True):
-                s_id = db_save_screening_session(
+            if "last_auto_saved" not in st.session_state or st.session_state.last_auto_saved != st.session_state.jd_title:
+                db_save_screening_session(
                     user["id"],
                     st.session_state.jd_title,
                     st.session_state.jd_text,
                     st.session_state.eval_results
                 )
-                st.success(f"Session #{s_id} saved!")
+                st.session_state.last_auto_saved = st.session_state.jd_title
 
         user_sessions = db_get_user_screenings(user["id"])
         if user_sessions:

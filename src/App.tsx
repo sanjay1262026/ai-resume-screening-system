@@ -21,6 +21,7 @@ import { CandidateModal } from './components/CandidateModal';
 import { Candidate, ScoringWeights, ScreeningSession, User } from './types';
 import { SAMPLE_JOB_DESCRIPTIONS, SAMPLE_CANDIDATES } from './data/sampleData';
 import { evaluateCandidate } from './utils/scoringEngine';
+import { fetchUserCloudData, autoSaveUserCloudData } from './utils/api';
 
 export const App: React.FC = () => {
   // Navigation
@@ -56,13 +57,14 @@ export const App: React.FC = () => {
     full_name: 'Lead Recruiter',
   });
   const [sessions, setSessions] = useState<ScreeningSession[]>([]);
+  const [isCloudSaving, setIsCloudSaving] = useState<boolean>(false);
+  const [hasInitializedFromCloud, setHasInitializedFromCloud] = useState<boolean>(false);
 
   // Selected candidate modal
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   // Candidate Pool
   const [rawCandidatePool, setRawCandidatePool] = useState<Candidate[]>(() => {
-    // Pre-evaluate sample candidates against initial JD
     return SAMPLE_CANDIDATES.map((sample) =>
       evaluateCandidate(
         {
@@ -79,6 +81,50 @@ export const App: React.FC = () => {
       )
     ).sort((a, b) => b.overall_score - a.overall_score);
   });
+
+  // Load cloud data on mount or when user changes
+  useEffect(() => {
+    if (!currentUser?.username) return;
+    let isCancelled = false;
+
+    async function loadCloud() {
+      if (!currentUser) return;
+      const cloudData = await fetchUserCloudData(currentUser.username);
+      if (cloudData && !isCancelled) {
+        if (cloudData.jdTitle) setJdTitle(cloudData.jdTitle);
+        if (cloudData.jdText) setJdText(cloudData.jdText);
+        if (cloudData.weights) setWeights(cloudData.weights);
+        if (cloudData.candidates && cloudData.candidates.length > 0) {
+          setRawCandidatePool(cloudData.candidates);
+        }
+        if (cloudData.sessions && cloudData.sessions.length > 0) {
+          setSessions(cloudData.sessions);
+        }
+      }
+      setHasInitializedFromCloud(true);
+    }
+
+    loadCloud();
+    return () => {
+      isCancelled = true;
+    };
+  }, [currentUser?.username]);
+
+  // Auto-save changes to the cloud backend
+  useEffect(() => {
+    if (!hasInitializedFromCloud || !currentUser?.username) return;
+
+    setIsCloudSaving(true);
+    autoSaveUserCloudData(currentUser.username, {
+      jdTitle,
+      jdText,
+      weights,
+      candidates: rawCandidatePool,
+      sessions,
+    });
+    const timer = setTimeout(() => setIsCloudSaving(false), 800);
+    return () => clearTimeout(timer);
+  }, [hasInitializedFromCloud, currentUser?.username, jdTitle, jdText, weights, rawCandidatePool, sessions]);
 
   // Dynamically re-evaluate scores when weights change
   const candidatesWithUpdatedWeights = useMemo(() => {
@@ -221,6 +267,7 @@ export const App: React.FC = () => {
             onSaveSession={handleSaveSession}
             onLoadSession={handleLoadSession}
             hasResults={candidatesWithUpdatedWeights.length > 0}
+            isCloudSaving={isCloudSaving}
           />
 
           {/* Right Workspace Area */}
